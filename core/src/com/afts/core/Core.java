@@ -18,7 +18,7 @@ public class Core extends ApplicationAdapter {
 	public void create ()
 	{
 		this.stateManager = new StateManager();
-		this.stateManager.pushNewState(new PlayState(this.stateManager));
+		this.stateManager.pushNewState(new MenuState(this.stateManager));
 	}
 
 	@Override

@@ -18,27 +18,27 @@ public class StateManager {
 
     public void updateCurrentState()
     {
-        if(!this.states.isEmpty())
+        if(!this.states.isEmpty() && this.states.get(this.states.size() - 1) != null)
         {
-           this.states.get(0).update();
+           this.states.get(this.states.size() - 1).update();
         }
     }
 
     public void renderCurrentState()
     {
-        if(!this.states.isEmpty())
+        if(!this.states.isEmpty() && this.states.get(this.states.size() - 1) != null)
         {
-            this.states.get(0).render();
+            this.states.get(this.states.size() - 1).render();
         }
 
     }
 
     public void dispose()
     {
-        while(!this.states.isEmpty())
+        while(!this.states.isEmpty() && this.states.get(this.states.size() - 1) != null)
         {
-            this.states.get(0).dispose();
-            this.states.remove(0);
+            this.states.get(this.states.size() - 1).dispose();
+            this.states.remove(this.states.size() - 1);
         }
     }
 
@@ -55,12 +55,14 @@ public class StateManager {
 
     public void popCurrentState()
     {
-        if(!this.states.isEmpty())
+        if(!this.states.isEmpty() && this.states.get(this.states.size() - 1) != null)
         {
-            this.states.get(0).dispose();
+            this.states.get(this.states.size() - 1).dispose();
+            this.states.remove(this.states.size() - 1);
+            this.states.get(this.states.size() - 1).reInitializeAfterStateChange();
         }
 
-        this.states.remove(0);
+
     }
 
 }
