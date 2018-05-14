@@ -1,5 +1,7 @@
 package com.afts.core.Math;
 
+import com.afts.core.Utility.StaticSettings;
+
 /**
  * Created by Steven on 14/05/2018.
  * A simple Y axis converter. It takes takes a desired Y-Coordinate and converts it to a Y-Down system, instead of the built in Y-Up.
@@ -10,8 +12,9 @@ public class CoordinateConverter {
 
     int sizeOfScreenY;
 
-    public CoordinateConverter(int sizeOfScreenY) {
-        this.sizeOfScreenY = sizeOfScreenY;
+    public CoordinateConverter() {
+        //Change this to the
+        this.sizeOfScreenY = StaticSettings.GAME_HEIGHT;
     }
 
     //Takes a coordinate and returns the Y-Down equivalent
