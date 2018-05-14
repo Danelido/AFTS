@@ -10,9 +10,6 @@ public class MenuState extends State {
     {
         super(stateManager);
         System.out.println("MenuState created!");
-        // This is how it works when changing from one state to another
-        System.out.println("Switching from menustate to playstate!");
-        this.stateManager.pushNewState(new PlayState(this.stateManager));
     }
 
     @Override

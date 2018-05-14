@@ -2,6 +2,7 @@ package com.afts.core;
 
 import com.afts.core.Math.CoordinateConverter;
 import com.afts.core.State.MenuState;
+import com.afts.core.State.PlayState;
 import com.afts.core.State.StateManager;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -17,7 +18,7 @@ public class Core extends ApplicationAdapter {
 	public void create ()
 	{
 		this.stateManager = new StateManager();
-		this.stateManager.pushNewState(new MenuState(this.stateManager));
+		this.stateManager.pushNewState(new PlayState(this.stateManager));
 	}
 
 	@Override
@@ -29,8 +30,6 @@ public class Core extends ApplicationAdapter {
 		// Clear screen and buffers etc
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-
 
 		// Render current state
 		this.stateManager.renderCurrentState();

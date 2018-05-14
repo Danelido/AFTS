@@ -29,6 +29,7 @@ public class StateManager {
         {
             this.states.peek().render();
         }
+
     }
 
     public void dispose()
