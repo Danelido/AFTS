@@ -8,7 +8,7 @@ public abstract class State {
 
     protected StateManager stateManager;
 
-    public State(StateManager stateManager)
+    protected State(StateManager stateManager)
     {
         this.stateManager = stateManager;
     }

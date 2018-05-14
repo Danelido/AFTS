@@ -1,6 +1,7 @@
 package com.afts.core.State;
 
 import java.util.Stack;
+import java.util.Vector;
 
 /**
  * Created by Alexander Danliden on 2018-05-14.
@@ -8,52 +9,58 @@ import java.util.Stack;
 
 public class StateManager {
 
-    private Stack<State> states;
+    private Vector<State> states;
 
     public StateManager()
     {
-        states = new Stack<State>();
+        states = new Vector<State>();
     }
 
     public void updateCurrentState()
     {
-        if(!this.states.empty())
+        if(!this.states.isEmpty())
         {
-            this.states.peek().update();
+           this.states.get(0).update();
         }
     }
 
     public void renderCurrentState()
     {
-        if(!this.states.empty())
+        if(!this.states.isEmpty())
         {
-            this.states.peek().render();
+            this.states.get(0).render();
         }
 
     }
 
     public void dispose()
     {
-        while(!this.states.empty())
+        while(!this.states.isEmpty())
         {
-            this.states.peek().dispose();
-            this.states.pop();
+            this.states.get(0).dispose();
+            this.states.remove(0);
         }
     }
 
     public void pushNewState(State newState)
     {
-        this.states.push(newState);
+       if(newState == null)
+       {
+           System.out.println("The \"new state\" is null..");
+           return;
+       }
+
+        this.states.add(newState);
     }
 
     public void popCurrentState()
     {
         if(!this.states.isEmpty())
         {
-            this.states.peek().dispose();
+            this.states.get(0).dispose();
         }
 
-        this.states.pop();
+        this.states.remove(0);
     }
 
 }

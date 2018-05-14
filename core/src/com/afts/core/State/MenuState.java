@@ -9,7 +9,7 @@ public class MenuState extends State {
     public MenuState(StateManager stateManager)
     {
         super(stateManager);
-        System.out.println("MenuState created!");
+
     }
 
     @Override
@@ -27,6 +27,6 @@ public class MenuState extends State {
     @Override
     public void dispose()
     {
-        System.out.println("MenuState disposed (Destroyed)");
+
     }
 }
