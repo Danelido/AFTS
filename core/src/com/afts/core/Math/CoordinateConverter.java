@@ -3,6 +3,7 @@ package com.afts.core.Math;
 /**
  * Created by Steven on 14/05/2018.
  * A simple Y axis converter. It takes takes a desired Y-Coordinate and converts it to a Y-Down system, instead of the built in Y-Up.
+ * We can now look at the system as a Y-down system
  */
 
 public class CoordinateConverter {
@@ -17,7 +18,7 @@ public class CoordinateConverter {
     public int calcYCoord(int coordinate) {
 
         //If the coordinate is within the screenbounds
-        if(coordinate < sizeOfScreenY && coordinate >= 0) {
+        if(coordinate <= sizeOfScreenY && coordinate >= 0) {
             coordinate = this.sizeOfScreenY - coordinate;
         }
         //Return a unusable coordinate

@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.GL20;
 public class Core extends ApplicationAdapter {
 
 	private StateManager stateManager;
+	CoordinateConverter testConverter;
 
 	@Override
 	public void create ()
