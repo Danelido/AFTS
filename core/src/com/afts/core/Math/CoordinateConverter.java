@@ -12,13 +12,15 @@ public class CoordinateConverter {
 
     int sizeOfScreenY;
 
-    public CoordinateConverter() {
+    public CoordinateConverter()
+    {
         //Change this to the
         this.sizeOfScreenY = StaticSettings.GAME_HEIGHT;
     }
 
     //Takes a coordinate and returns the Y-Down equivalent
-    public int calcYCoord(int coordinate) {
+    public int calcYCoord(int coordinate)
+    {
 
         //If the coordinate is within the screenbounds
         if(coordinate <= sizeOfScreenY && coordinate >= 0) {

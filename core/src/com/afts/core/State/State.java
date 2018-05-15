@@ -8,11 +8,14 @@ public abstract class State {
 
     protected StateManager stateManager;
 
-    public State(StateManager stateManager)
+    protected State(StateManager stateManager)
     {
         this.stateManager = stateManager;
+        this.initialize();
     }
 
+    protected abstract void initialize();
+    public abstract void reInitializeAfterStateChange();
     public abstract void update();
     public abstract void render();
     public abstract void dispose();

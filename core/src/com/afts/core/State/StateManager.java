@@ -1,6 +1,7 @@
 package com.afts.core.State;
 
 import java.util.Stack;
+import java.util.Vector;
 
 /**
  * Created by Alexander Danliden on 2018-05-14.
@@ -8,52 +9,60 @@ import java.util.Stack;
 
 public class StateManager {
 
-    private Stack<State> states;
+    private Vector<State> states;
 
     public StateManager()
     {
-        states = new Stack<State>();
+        states = new Vector<State>();
     }
 
     public void updateCurrentState()
     {
-        if(!this.states.empty())
+        if(!this.states.isEmpty() && this.states.get(this.states.size() - 1) != null)
         {
-            this.states.peek().update();
+           this.states.get(this.states.size() - 1).update();
         }
     }
 
     public void renderCurrentState()
     {
-        if(!this.states.empty())
+        if(!this.states.isEmpty() && this.states.get(this.states.size() - 1) != null)
         {
-            this.states.peek().render();
+            this.states.get(this.states.size() - 1).render();
         }
 
     }
 
     public void dispose()
     {
-        while(!this.states.empty())
+        while(!this.states.isEmpty() && this.states.get(this.states.size() - 1) != null)
         {
-            this.states.peek().dispose();
-            this.states.pop();
+            this.states.get(this.states.size() - 1).dispose();
+            this.states.remove(this.states.size() - 1);
         }
     }
 
     public void pushNewState(State newState)
     {
-        this.states.push(newState);
+       if(newState == null)
+       {
+           System.out.println("The \"new state\" is null..");
+           return;
+       }
+
+        this.states.add(newState);
     }
 
     public void popCurrentState()
     {
-        if(!this.states.isEmpty())
+        if(!this.states.isEmpty() && this.states.get(this.states.size() - 1) != null)
         {
-            this.states.peek().dispose();
+            this.states.get(this.states.size() - 1).dispose();
+            this.states.remove(this.states.size() - 1);
+            this.states.get(this.states.size() - 1).reInitializeAfterStateChange();
         }
 
-        this.states.pop();
+
     }
 
 }

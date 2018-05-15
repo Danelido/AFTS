@@ -1,5 +1,6 @@
 package com.afts.core;
 
+import com.afts.core.Entities.Player;
 import com.afts.core.Math.CoordinateConverter;
 import com.afts.core.State.MenuState;
 import com.afts.core.State.PlayState;
@@ -12,13 +13,13 @@ import com.badlogic.gdx.graphics.GL20;
 public class Core extends ApplicationAdapter {
 
 	private StateManager stateManager;
-	CoordinateConverter testConverter;
 
 	@Override
-	public void create ()
+	public void create()
 	{
 		this.stateManager = new StateManager();
-		this.stateManager.pushNewState(new PlayState(this.stateManager));
+		this.stateManager.pushNewState(new MenuState(this.stateManager));
+
 	}
 
 	@Override
