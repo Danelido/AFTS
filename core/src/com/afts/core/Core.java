@@ -1,9 +1,6 @@
 package com.afts.core;
 
-import com.afts.core.Entities.Player;
-import com.afts.core.Math.CoordinateConverter;
 import com.afts.core.State.MenuState;
-import com.afts.core.State.PlayState;
 import com.afts.core.State.StateManager;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;

@@ -1,13 +1,13 @@
 package com.afts.core.State;
 
+import com.afts.core.Entities.PlayerPackage.Player;
 import com.afts.core.Utility.ResourceHandler;
 import com.afts.core.Utility.StaticSettings;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Created by Alexander Danliden on 2018-05-14.
@@ -17,11 +17,9 @@ public class PlayState extends State{
 
     private OrthographicCamera camera;
     private ResourceHandler resourceHandler;
-    private SpriteBatch spriteBatch;
     private InputProcessor inputProcessor;
+    private Player player;
 
-    // Testing
-    Texture tempTexture;
 
     public PlayState(StateManager stateManager) { super(stateManager); }
 
@@ -33,16 +31,15 @@ public class PlayState extends State{
 
         // Initialize classes
         this.resourceHandler = new ResourceHandler();
-        this.spriteBatch  = new SpriteBatch();
 
         // Initialize camera
         this.camera = new OrthographicCamera(StaticSettings.GAME_WIDTH, StaticSettings.GAME_HEIGHT);
 
-        // Initializing temp texture (for testing purposes)
-        this.tempTexture = this.resourceHandler.getTexture("badlogic.jpg");
-
         // Tells GDX that it's now time to listen to this class inputHandler
         Gdx.input.setInputProcessor(this.inputProcessor);
+
+        // Initialize player class
+        this.player = new Player(this.resourceHandler.getTexture("Textures/Player/TemporaryPlayerTexture.png"), this.camera, new Vector2(0.f,0.f), new Vector2(64.f, 64.f));
 
         // Debug stuff
         System.out.println("Playstate created");
@@ -60,19 +57,13 @@ public class PlayState extends State{
     public void update()
     {
        this.camera.update();
-       this.spriteBatch.setProjectionMatrix(this.camera.combined);
-
-       // Yet another debug
-       //System.out.println("Mouse [" + Gdx.input.getX() + ", " + Gdx.input.getY() + "]");
-
+       this.player.update();
     }
 
     @Override
     public void render()
     {
-        this.spriteBatch.begin();
-        this.spriteBatch.draw(this.tempTexture, 0.f, 0.f, 100.f, 100.f);
-        this.spriteBatch.end();
+        this.player.render();
     }
 
 
@@ -83,22 +74,22 @@ public class PlayState extends State{
             public boolean keyDown(int keycode) {
                 if(Input.Keys.W == keycode)
                 {
-                    System.out.println("W");
+
                 }
 
                 if(Input.Keys.A == keycode)
                 {
-                    System.out.println("A");
+                    PlayState.this.player.translatePosition(new Vector2(-20.f, 0.f));
                 }
 
                 if(Input.Keys.S == keycode)
                 {
-                    System.out.println("S");
+
                 }
 
                 if(Input.Keys.D == keycode)
                 {
-                    System.out.println("D");
+                    PlayState.this.player.translatePosition(new Vector2(20.f, 0.f));
                 }
 
                 if(Input.Keys.E == keycode)
@@ -150,7 +141,7 @@ public class PlayState extends State{
     @Override
     public void dispose()
     {
-        this.spriteBatch.dispose();
+        this.player.dispose();
         this.resourceHandler.cleanUp();
         System.out.println("Playstate disposed");
     }

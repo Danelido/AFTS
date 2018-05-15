@@ -1,6 +1,7 @@
 package com.afts.core.Math;
 
 import com.afts.core.Utility.StaticSettings;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Created by Steven on 14/05/2018.
@@ -33,4 +34,5 @@ public class CoordinateConverter {
 
         return coordinate;
     }
+
 }
