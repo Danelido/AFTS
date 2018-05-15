@@ -19,7 +19,10 @@ public class Core extends ApplicationAdapter {
 	{
 		this.stateManager = new StateManager();
 		this.stateManager.pushNewState(new MenuState(this.stateManager));
+<<<<<<< HEAD
 
+=======
+>>>>>>> d019b5354cc86ad7b74472eb5df08122f0b36318
 	}
 
 	@Override
