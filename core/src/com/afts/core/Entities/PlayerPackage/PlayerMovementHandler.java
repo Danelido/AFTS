@@ -2,7 +2,6 @@ package com.afts.core.Entities.PlayerPackage;
 
 import com.afts.core.Utility.StaticSettings;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -11,7 +10,6 @@ import com.badlogic.gdx.math.Vector3;
 public class PlayerMovementHandler {
 
     private Player player;
-    private OrthographicCamera camera;
 
     // Movement stuff
     private float acceleration;
@@ -25,17 +23,19 @@ public class PlayerMovementHandler {
     private float rotationAcceleration;
     private float rotationDeAcceleration;
 
-    public PlayerMovementHandler(Player player, OrthographicCamera camera)
+    // How far from the borders would you like the "max turning" would be in percentage
+    private float controllerMaxWidthPercentageOfScreenSize = 0.5f;
+
+    public PlayerMovementHandler(Player player)
     {
         this.player = player;
-        this.camera = camera;
 
         // Initialize movement and rotation variables
         this.acceleration = 20.f;
         this.deAcceleration = 20.f;
-        this.maxVelocity = new Vector2(8.f, 20.f);
+        this.maxVelocity = new Vector2(8.f, 8.f);
         this.currentVelocity = new Vector2(0.f, 0.f);
-        this.maxRotation = 60.f;
+        this.maxRotation = 90.f;
         this.currentRotation = 0.f;
         this.rotationAcceleration = 300.f;
         this.rotationDeAcceleration = 300.f;
@@ -45,11 +45,13 @@ public class PlayerMovementHandler {
     public void update(Vector3 userPressed, boolean isBeingPressed)
     {
         float delta = Gdx.graphics.getDeltaTime();
+        float multiplierY = this.getVelocityMultiplierY();
 
         if(isBeingPressed)
         {
-           float multiplier =  this.getVelocityMultiplier(userPressed);
-           this.moving(multiplier, delta);
+           float multiplierX =  this.getVelocityMultiplierX(userPressed);
+           System.out.println("Multiplier: " + multiplierX);
+           this.moving(multiplierX, multiplierY, delta);
         }
         else
         {
@@ -61,88 +63,107 @@ public class PlayerMovementHandler {
     }
 
 
-    private void moving(float multiplier, float delta)
+    private void moving(float multiplierX, float multiplierY, float delta)
     {
-        if(multiplier > 0.f)
+        if(multiplierX > 0.f)
         {
             // Movement
-            if(this.currentVelocity.x < (this.maxVelocity.x * multiplier))
+            if(this.currentVelocity.x < (this.maxVelocity.x * multiplierX))
             {
-                this.currentVelocity.x += (this.acceleration * multiplier) * delta;
+                this.currentVelocity.x += (this.acceleration * multiplierX) * delta;
             }
-            else if(this.currentVelocity.x > (this.maxVelocity.x * multiplier))
+            else if(this.currentVelocity.x > (this.maxVelocity.x * multiplierX))
             {
-                this.currentVelocity.x -= (this.acceleration * multiplier) * delta;
+                this.currentVelocity.x -= (this.acceleration * multiplierX) * delta;
             }
             else
             {
-                this.currentVelocity.x = this.maxVelocity.x * multiplier;
+                this.currentVelocity.x = this.maxVelocity.x * multiplierX;
             }
 
 
             // Rotation
-            if(this.currentRotation > -(this.maxRotation * multiplier))
+            if(this.currentRotation > -(this.maxRotation * multiplierX))
             {
                 // Quick fix to avoid "looking jagged" when rotating towards the end
-                float amountToDecreaseWith = (this.rotationAcceleration * multiplier * delta);
+                float amountToDecreaseWith = (this.rotationAcceleration * multiplierX * delta);
                 float endResult = this.currentRotation - amountToDecreaseWith;
 
-                if(endResult < -(this.maxRotation*multiplier))
+                if(endResult < -(this.maxRotation*multiplierX))
                 {
-                    float newDecreaseValue =  -(this.maxRotation*multiplier) - this.currentRotation;
+                    float newDecreaseValue =  -(this.maxRotation*multiplierX) - this.currentRotation;
                     this.currentRotation += newDecreaseValue;
                 }
                 else
                 {
-                    this.currentRotation -= this.rotationAcceleration * multiplier * delta;
+                    this.currentRotation -= this.rotationAcceleration * delta;
                 }
             }
             else
             {
-                this.currentRotation = -this.maxRotation * multiplier;
+                this.currentRotation = -this.maxRotation * multiplierX;
             }
 
         }
-        else if(multiplier < 0.f)
+        else if(multiplierX < 0.f)
         {
             // Movement
-            if(this.currentVelocity.x > (this.maxVelocity.x * multiplier))
+            if(this.currentVelocity.x > (this.maxVelocity.x * multiplierX))
             {
-                this.currentVelocity.x += (this.acceleration * multiplier) * delta;
+                this.currentVelocity.x += (this.acceleration * multiplierX) * delta;
             }
-            else if(this.currentVelocity.x < (this.maxVelocity.x * multiplier))
+            else if(this.currentVelocity.x < (this.maxVelocity.x * multiplierX))
             {
-                this.currentVelocity.x -= (this.acceleration * multiplier) * delta;
+                this.currentVelocity.x -= (this.acceleration * multiplierX) * delta;
             }
             else
             {
-                this.currentVelocity.x = this.maxVelocity.x * multiplier;
+                this.currentVelocity.x = this.maxVelocity.x * multiplierX;
             }
 
 
             // Rotation
-            if(this.currentRotation < -(this.maxRotation * multiplier))
+            if(this.currentRotation < -(this.maxRotation * multiplierX))
             {
                 // Quick fix to avoid "looking jagged" when rotating towards the end
-                float amountToIncreaseWith = -(this.rotationAcceleration * multiplier * delta);
+                float amountToIncreaseWith = -(this.rotationAcceleration * multiplierX * delta);
                 float endResult = this.currentRotation + amountToIncreaseWith;
 
-                if(endResult > -(this.maxRotation*multiplier))
+                if(endResult > -(this.maxRotation*multiplierX))
                 {
-                    float newIncreaseValue =  -(this.maxRotation*multiplier) - this.currentRotation;
+                    float newIncreaseValue =  -(this.maxRotation*multiplierX) - this.currentRotation;
                     this.currentRotation += newIncreaseValue;
                 }
                 else
                 {
-                    this.currentRotation -= this.rotationAcceleration * multiplier * delta;
+                    this.currentRotation += this.rotationAcceleration * delta;
                 }
             }
             else
             {
-                this.currentRotation = -this.maxRotation * multiplier;
+                this.currentRotation = -this.maxRotation * multiplierX;
             }
 
         }
+
+        //System.out.println("Yvel: " +  Math.abs(1.f - (Math.abs(this.currentVelocity.x) / this.maxVelocity.x)));
+        // Movement for Y
+        if(this.currentVelocity.y < (this.maxVelocity.y * multiplierY))
+        {
+            this.currentVelocity.y += (this.acceleration *  0.1f) * delta;
+        }
+        else if(this.currentVelocity.y > (this.maxVelocity.y * multiplierY))
+        {
+            this.currentVelocity.y -= (this.acceleration * 0.1f) * delta;
+        }
+        else
+        {
+            this.currentVelocity.y = this.maxVelocity.y * multiplierY;
+        }
+
+
+
+
 
     }
 
@@ -192,13 +213,39 @@ public class PlayerMovementHandler {
 
     }
 
-    private float getVelocityMultiplier(Vector3 userPressed)
+    private float getVelocityMultiplierX(Vector3 userPressed)
     {
         // Convert the screen position to game position
-        float xPress = (userPressed.x / Gdx.graphics.getWidth()) * StaticSettings.GAME_WIDTH;
+        float xPress = (userPressed.x / Gdx.graphics.getWidth()) *StaticSettings.GAME_WIDTH;
         // Calculate an multiplier
-        float  multiplier = (xPress / ( StaticSettings.GAME_WIDTH / 2)) - 1.f;
+        float multiplier = (((xPress)  / ( StaticSettings.GAME_WIDTH / 2)) - 1.f);
+
+        // Basically where is the max, when multiplier is either 1 or -1
+        if(multiplier < -0.0f)
+        {
+            multiplier += (this.controllerMaxWidthPercentageOfScreenSize * multiplier);
+            if(multiplier < -1.f)
+                multiplier = -1.f;
+
+        }else if(multiplier > 0.0f)
+        {
+            multiplier += (this.controllerMaxWidthPercentageOfScreenSize * multiplier);
+            if(multiplier > 1.f)
+                multiplier = 1.f;
+
+        }
 
         return multiplier;
+
+    }
+
+    private float getVelocityMultiplierY()
+    {
+        return (Math.min(1.f, Math.abs(1.f - (Math.abs(this.currentVelocity.x) / this.maxVelocity.x))));
+    }
+
+    public Vector2 getMaximumVelocity()
+    {
+        return this.maxVelocity;
     }
 }

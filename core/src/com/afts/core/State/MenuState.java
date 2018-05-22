@@ -23,7 +23,6 @@ public class MenuState extends State {
 
         Gdx.input.setInputProcessor(this.inputProcessor);
 
-        System.out.println("Menustate created");
     }
 
     @Override
@@ -56,7 +55,6 @@ public class MenuState extends State {
 
                 if(Input.Keys.E == keycode)
                 {
-                    System.out.println("Off to playstate booois");
                     MenuState.this.stateManager.pushNewState(new PlayState(MenuState.this.stateManager));
                 }
 

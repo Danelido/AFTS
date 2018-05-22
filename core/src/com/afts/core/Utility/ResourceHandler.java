@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,29 +14,28 @@ public class ResourceHandler {
     public ResourceHandler()
     { }
 
-    public Texture getTexture(String nameOfTexture)
+    public Texture getTexture(String key)
     {
-        Texture texture = this.textureContainer.get(nameOfTexture);
+        Texture texture = this.textureContainer.get(key);
         if(texture != null)
         {
             return texture;
         }else
         {
-            Gdx.app.log("WARNING", "Could not find file [" + nameOfTexture + "] but will try to add it");
-            this.addTexture(nameOfTexture);
-            return this.textureContainer.get(nameOfTexture);
+            Gdx.app.log("ERROR", "Could not find file [" + key + "]!");
+           return null;
         }
     }
 
-    public void addTexture(String nameOfTexture)
+    public void addTexture(String key,String pathToFile)
     {
-        FileHandle file = Gdx.files.internal(nameOfTexture);
+        FileHandle file = Gdx.files.internal(pathToFile);
         if(file.exists())
         {
-            this.textureContainer.put(nameOfTexture, new Texture(file));
+            this.textureContainer.put(key, new Texture(file));
         }else
         {
-          Gdx.app.log("ERROR", "Texture with name[" + nameOfTexture + "] does not exist!");
+          Gdx.app.log("ERROR", "Texture with key[" + key + "] does not exist!");
         }
     }
 

@@ -16,6 +16,8 @@ public class Core extends ApplicationAdapter {
 	{
 		this.stateManager = new StateManager();
 		this.stateManager.pushNewState(new MenuState(this.stateManager));
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	@Override
@@ -27,6 +29,7 @@ public class Core extends ApplicationAdapter {
 		// Clear screen and buffers etc
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 
 		// Render current state
 		this.stateManager.renderCurrentState();

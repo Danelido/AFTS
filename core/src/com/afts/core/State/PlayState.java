@@ -3,6 +3,7 @@ package com.afts.core.State;
 import com.afts.core.Entities.PlayerPackage.Player;
 import com.afts.core.Utility.ResourceHandler;
 import com.afts.core.Utility.StaticSettings;
+import com.afts.core.World.Background;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -19,7 +20,7 @@ public class PlayState extends State{
     private ResourceHandler resourceHandler;
     private InputProcessor inputProcessor;
     private Player player;
-
+    private Background background;
 
     public PlayState(StateManager stateManager) { super(stateManager); }
 
@@ -29,20 +30,20 @@ public class PlayState extends State{
         // Creates and initializes inputProcessor
         this.inputHandler();
 
-        // Initialize classes
-        this.resourceHandler = new ResourceHandler();
-
-        // Initialize camera
-        this.camera = new OrthographicCamera(StaticSettings.GAME_WIDTH, StaticSettings.GAME_HEIGHT);
-
         // Tells GDX that it's now time to listen to this class inputHandler
         Gdx.input.setInputProcessor(this.inputProcessor);
 
-        // Initialize player class
-        this.player = new Player(this.resourceHandler.getTexture("Textures/Player/TemporaryPlayerTexture.png"), this.camera, new Vector2(0.f,0.f), new Vector2(64.f, 64.f));
+        this.resourceHandler = new ResourceHandler();
 
-        // Debug stuff
-        System.out.println("Playstate created");
+        this.initializeResources();
+
+        this.camera = new OrthographicCamera(StaticSettings.GAME_WIDTH, StaticSettings.GAME_HEIGHT);
+
+        this.player = new Player(this.resourceHandler, this.camera, new Vector2(0.f,-(StaticSettings.GAME_HEIGHT/2.f) * 0.25f), new Vector2(32.f, 32.f));
+
+        // Initialize the background "More of a visual effect than anything else"
+        this.background = new Background(this.camera, this.resourceHandler);
+
     }
 
     // This function is ONLY called after a state change where a state higher up in the "stack"
@@ -53,16 +54,24 @@ public class PlayState extends State{
         Gdx.input.setInputProcessor(this.inputProcessor);
     }
 
+    private void initializeResources()
+    {
+        this.resourceHandler.addTexture("playerSprite", "Textures/Player/TemporaryPlayerTexture.png");
+        this.resourceHandler.addTexture("basicParticle", "Textures/Particles/particle_1.png");
+    }
+
     @Override
     public void update()
     {
        this.camera.update();
+       this.background.update();
        this.player.update();
     }
 
     @Override
     public void render()
     {
+        this.background.render();
         this.player.render();
     }
 
@@ -72,6 +81,7 @@ public class PlayState extends State{
         this.inputProcessor = new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
+
                 if(Input.Keys.W == keycode)
                 {
 
@@ -94,7 +104,6 @@ public class PlayState extends State{
 
                 if(Input.Keys.E == keycode)
                 {
-                    System.out.println("Back to menu boois");
                     PlayState.this.stateManager.popCurrentState();
                 }
 
@@ -113,16 +122,20 @@ public class PlayState extends State{
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                PlayState.this.player.setIsBeingPressed(true);
+                PlayState.this.player.setTouch(screenX, screenY);
                 return false;
             }
 
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                PlayState.this.player.setIsBeingPressed(false);
                 return false;
             }
 
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
+                PlayState.this.player.setTouch(screenX, screenY);
                 return false;
             }
 
@@ -143,6 +156,6 @@ public class PlayState extends State{
     {
         this.player.dispose();
         this.resourceHandler.cleanUp();
-        System.out.println("Playstate disposed");
+        this.background.dispose();
     }
 }
