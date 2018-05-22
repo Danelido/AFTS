@@ -50,7 +50,6 @@ public class PlayerMovementHandler {
         if(isBeingPressed)
         {
            float multiplierX =  this.getVelocityMultiplierX(userPressed);
-           System.out.println("Multiplier: " + multiplierX);
            this.moving(multiplierX, multiplierY, delta);
         }
         else

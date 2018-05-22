@@ -100,7 +100,5 @@ public class MenuState extends State {
 
     @Override
     public void dispose()
-    {
-        System.out.println("Menustate disposed");
-    }
+    { }
 }
