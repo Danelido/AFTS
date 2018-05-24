@@ -38,8 +38,9 @@ public class PlayState extends State{
         this.initializeResources();
 
         this.camera = new OrthographicCamera(StaticSettings.GAME_WIDTH, StaticSettings.GAME_HEIGHT);
+        this.camera.zoom = 2.f;
 
-        this.player = new Player(this.resourceHandler, this.camera, new Vector2(0.f,-(StaticSettings.GAME_HEIGHT/2.f) * 0.25f), new Vector2(32.f, 32.f));
+        this.player = new Player(this.resourceHandler, this.camera, new Vector2(0.f,-(StaticSettings.GAME_HEIGHT/2.f)), new Vector2(32.f, 32.f));
 
         // Initialize the background "More of a visual effect than anything else"
         this.background = new Background(this.camera, this.resourceHandler);
@@ -58,6 +59,7 @@ public class PlayState extends State{
     {
         this.resourceHandler.addTexture("playerSprite", "Textures/Player/TemporaryPlayerTexture.png");
         this.resourceHandler.addTexture("basicParticle", "Textures/Particles/particle_1.png");
+        this.resourceHandler.addTexture("trailParticle", "Textures/Particles/particle_trail.png");
     }
 
     @Override
@@ -66,6 +68,9 @@ public class PlayState extends State{
        this.camera.update();
        this.background.update();
        this.player.update();
+
+       this.camera.position.lerp(this.player.getPosition().cpy().add(0.f,StaticSettings.GAME_HEIGHT/4.f, 0.f), Gdx.graphics.getDeltaTime() * 15.f);
+
     }
 
     @Override
@@ -130,6 +135,7 @@ public class PlayState extends State{
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
                 PlayState.this.player.setIsBeingPressed(false);
+                PlayState.this.player.setTouch(0.f,0.f);
                 return false;
             }
 

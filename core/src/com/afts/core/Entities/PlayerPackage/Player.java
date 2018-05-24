@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -21,7 +22,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Player {
 
-    private Vector2 position;
+    private Vector3 position; // Vector 3 to make camera lerp easier, just ignore z
     private Vector2 size;
     private Vector2 origin;
 
@@ -40,13 +41,17 @@ public class Player {
 
     // Particles
     private ParticleGenerator particleGenerator;
-    private float particleSpeed = 1.5f;
-    private float particleWidth = 6.f;
-    private float particleHeight = 6.f;
-    private float particleSpreadMultiplier;
+    private float particleSpeed = 2.5f;
+    private float particleWidth = 10.f;
+    private float particleHeight = 10.f;
+    private float particleSpreadMultiplier = 100.f;
+    private float spawnFrequency = 60.f;
+    private float ticker = 0.f;
 
     //Temp
     private Texture tempTex;
+    private float tempX = 0.f;
+    private float tempY = 200.f;
 
     public Player(ResourceHandler resources, OrthographicCamera camera, Vector2 position, Vector2 size)
     {
@@ -56,10 +61,9 @@ public class Player {
 
         this.camera = camera;
         this.size = size;
-        this.position = position;
+        this.position = new Vector3(position.cpy(), 0.f);
 
         // Center the player on the coordinates that was sent in
-        this.position = position;
         this.position.x -= (this.size.x / 2.f);
         this.position.y -= (this.size.y / 2.f);
 
@@ -72,44 +76,43 @@ public class Player {
         // Rotation
         this.rotation = 0.f;
 
+        // Movement /w handler
         this.userPressed = new Vector3(0.f, 0.f, 0.f);
-
-        if(Gdx.app.getType() == Application.ApplicationType.Desktop)
-            this.isUserPressing = true;
-        else
-            this.isUserPressing = false;
-
+        this.isUserPressing = false;
         this.movementHandler = new PlayerMovementHandler(this);
 
-        this.particleGenerator = new ParticleGenerator(500, resources.getTexture("basicParticle"), this.camera);
+        // Particle initialization
+        this.particleGenerator = new ParticleGenerator(500, resources.getTexture("trailParticle"), this.camera);
         this.particleGenerator.setParticleColor(1.f, 1.f, 1.f, 0.5f);
         this.particleGenerator.setMaxAlphaForParticles(0.6f);
         this.particleGenerator.setCoreParticleColorRGB(1.f,1.f,1.f);
         this.particleGenerator.setSpawnSetting(SpawnSetting.fade_out);
-        this.particleSpreadMultiplier = this.movementHandler.getMaximumVelocity().y * 50.f;
 
-        this.tempTex = resources.getTexture("playerSprite"); // Temp
+        // Temp
+        this.tempTex = resources.getTexture("playerSprite");
+
     }
 
     public void update()
     {
-        // THIS is the debug line for the movement, right now it uses the mouse
-        // To test on android, remove this here and in playstate call
-        // player.setTouch in the touchDown function AND remember to set
-        // userPressing to true. Remember to set it to false in the touchUp function!
-        if(Gdx.app.getType() == Application.ApplicationType.Desktop)
-        this.userPressed.set((float)Gdx.input.getX(), (float)Gdx.input.getY(), 0.f);
 
         this.movementHandler.update(this.userPressed, this.isUserPressing);
 
-        this.particleGenerator.generateParticle(
-                this.getParticleSpawnX(),
-                this.getParticleSpawnY(),
-                this.particleWidth,
-                this.particleHeight,
-                1.5f ,
-                (float)this.getParticleVelocityX(),
-                (float)this.getParticleVelocityY());
+        this.ticker += Gdx.graphics.getDeltaTime();
+
+        if(this.ticker >= 1.f / this.spawnFrequency)
+        {
+            this.particleGenerator.generateParticle(
+                    this.getParticleSpawnX(),
+                    this.getParticleSpawnY(),
+                    this.particleWidth,
+                    this.particleHeight,
+                    1.5f ,
+                    (float)this.getParticleVelocityX(),
+                    (float)this.getParticleVelocityY());
+            this.ticker = 0.f;
+
+        }
 
         this.particleGenerator.update();
 
@@ -140,14 +143,12 @@ public class Player {
 
     // Temporary, for debug and for measurement when it comes to movement tweeking
     //--------------------------------------------------------------------------------
-    private float tempX = 0.f;
-    private float tempY = 200.f;
     private void drawTempTexture()
     {
         this.batch.draw(this.tempTex, tempX, tempY, 64.f, 64.f);
 
-        if((tempY - this.camera.position.y) + 100.f  < - StaticSettings.GAME_HEIGHT / 2.f)
-            tempY = (StaticSettings.GAME_HEIGHT / 2.f) + this.camera.position.y + 100.f;
+        if((tempY - this.camera.position.y) + 100.f  < (- StaticSettings.GAME_HEIGHT / 2.f) * this.camera.zoom)
+            tempY = (StaticSettings.GAME_HEIGHT / 2.f) * this.camera.zoom + this.camera.position.y + 100.f;
 
     }
     // --------------------------------------------------------------------------------
@@ -171,25 +172,30 @@ public class Player {
     private double getParticleVelocityX()
     {
         float velDir = MathUtils.cosDeg(this.rotation -90.f);
-        float rangeX = (((1.f - Math.abs(velDir)) * 100.f) / 4.f) * this.particleSpreadMultiplier;
-        float spreadX = MathUtils.random(-rangeX, rangeX );
+
+        float rangeX = (((1.f - Math.abs(velDir)) * 100.f) / 2.f) * this.particleSpreadMultiplier;
+
+        float spreadX = MathUtils.random(-rangeX, rangeX);
+
         spreadX /= 100.f;
+
         velDir += spreadX;
 
-        return particleSpeed * velDir;
+        return particleSpeed * velDir ;
     }
 
     private double getParticleVelocityY()
     {
         float velDir = MathUtils.sinDeg(this.rotation -90.f);
 
-        float rangeY = (((1.f - Math.abs(velDir)) * 100.f) / 4.f) * this.particleSpreadMultiplier;
+        float rangeY = (((1.f - Math.abs(velDir)) * 100.f) / 2.f) * this.particleSpreadMultiplier;
 
         float spreadY = MathUtils.random(-rangeY, rangeY);
 
         spreadY /= 100.f;
 
         velDir += spreadY;
+
 
         return particleSpeed * velDir;
     }
@@ -200,18 +206,15 @@ public class Player {
         this.particleGenerator.dispose();
     }
 
-
     public void translatePosition(Vector2 velocity)
     {
-        this.camera.translate(velocity);
-        this.position.add(velocity);
+        this.position.add(velocity.x * Gdx.graphics.getDeltaTime(), velocity.y * Gdx.graphics.getDeltaTime(), 0.f);
     }
 
     public void setTouch(float x, float y)
     {
         this.userPressed.set(x,y, 0.f);
     }
-
 
     public void setIsBeingPressed(boolean condition)
     {
@@ -223,4 +226,8 @@ public class Player {
         this.rotation = rotation;
     }
 
+    public Vector3 getPosition()
+    {
+        return this.position;
+    }
 }

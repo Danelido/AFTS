@@ -80,6 +80,8 @@ public class Particle {
     public void setAlpha(float a)
     {
         if(a < 0.f) a = 0.f;
+        if(a > 1.f) a = 1.f;
+
         this.color.a = a;
     }
 
