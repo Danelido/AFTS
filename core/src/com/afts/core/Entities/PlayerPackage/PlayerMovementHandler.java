@@ -39,7 +39,7 @@ public class PlayerMovementHandler {
         this.accelerationY = 600.f;
         this.deAccelerationX = 900.f;
         this.deAccelerationY = 600.f;
-        this.maxVelocity = new Vector2(1400.f, 1200.f);
+        this.maxVelocity = new Vector2(0.f, 0.f); // originally x = 1400.f y = 1200.f
         this.currentVelocity = new Vector2(0.f, 0.f);
         this.maxRotation = 90.f;
         this.currentRotation = 0.f;

@@ -1,6 +1,8 @@
 package com.afts.core.Entities.PlayerPackage;
 
+import com.afts.core.Entities.Objects.EntityPointSetting;
 import com.afts.core.Particles.Generator.SpawnSetting;
+import com.afts.core.Utility.PointCalculcator;
 import com.afts.core.Utility.ResourceHandler;
 import com.afts.core.Utility.StaticSettings;
 import com.badlogic.gdx.Gdx;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -39,17 +42,15 @@ public class Player {
     // Particles
     private PlayerParticleHandler particleHandler;
 
-    //Temp
-    private Texture tempTex;
-    private float tempX = 0.f;
-    private float tempY = 200.f;
+    // Collision
+    private Vector2[] points;
 
     public Player(ResourceHandler resources, OrthographicCamera camera, Vector2 position, Vector2 size)
     {
         this.batch = new SpriteBatch();
         this.playerColor = new Color(Color.WHITE);
-        this.textureRegion = new TextureRegion(resources.getTexture("playerSprite"));
-        
+        this.textureRegion = new TextureRegion(resources.getTexture("tile"));
+
         this.camera = camera;
         this.size = size;
         this.position = new Vector3(position.cpy(), 0.f);
@@ -58,7 +59,7 @@ public class Player {
         this.position.x -= (this.size.x / 2.f);
         this.position.y -= (this.size.y / 2.f);
 
-        this.origin = new Vector2(this.size.x / 2.f, this.size.y / 2.f);
+        this.origin = new Vector2(this.size.cpy().scl(0.5f));
 
         //Scale (Might be useful later if we want some cool effects on the player?)
         this.scale = 1.f;
@@ -75,16 +76,23 @@ public class Player {
         this.particleHandler.getParticleGenerator().setParticleColor(1.f, .5f, 0.5f, 1.f);
         this.particleHandler.getParticleGenerator().setSpawnSetting(SpawnSetting.fade_in_fade_out);
 
-        // Temp
-        this.tempTex = resources.getTexture("playerSprite");
+        this.points = new Vector2[4];
+        for(int i = 0; i < this.points.length; i++)
+        {
+            this.points[i] = new Vector2();
+        }
+
+        PointCalculcator.getPoints(this.points, new Vector2(this.position.x, this.position.y), this.size, this.origin , EntityPointSetting.RECTANGLE, 0.f);
 
     }
 
     public void update()
     {
         this.position_lastframe = this.position.cpy();
-        this.movementHandler.update(this.userPressed, this.isUserPressing);
+        //this.movementHandler.update(this.userPressed, this.isUserPressing);
         this.particleHandler.update();
+
+        PointCalculcator.getPoints(this.points, new Vector2(this.position.x, this.position.y), this.size, this.origin , EntityPointSetting.RECTANGLE, this.rotation - 90.f);
     }
 
     public void render()
@@ -93,8 +101,6 @@ public class Player {
         this.particleHandler.render();
         this.batch.setProjectionMatrix(this.camera.combined);
         this.batch.begin();
-
-        this.drawTempTexture();
 
         this.batch.setColor(this.playerColor);
 
@@ -109,18 +115,6 @@ public class Player {
 
         this.batch.end();
     }
-
-    // Temporary, for debug and for measurement when it comes to movement tweeking
-    //--------------------------------------------------------------------------------
-    private void drawTempTexture()
-    {
-        this.batch.draw(this.tempTex, tempX, tempY, 64.f, 64.f);
-
-        if((tempY - this.camera.position.y) + 100.f  < (- StaticSettings.GAME_HEIGHT / 2.f) * this.camera.zoom)
-            tempY = (StaticSettings.GAME_HEIGHT / 2.f) * this.camera.zoom + this.camera.position.y + 100.f;
-
-    }
-    // --------------------------------------------------------------------------------
 
     public void dispose()
     {
@@ -175,5 +169,15 @@ public class Player {
     public Vector2 getSize()
     {
         return this.size;
+    }
+
+    public Vector2[] getPoints()
+    {
+        return this.points;
+    }
+
+    public void setColor(Color color)
+    {
+        this.playerColor = color;
     }
 }
