@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +17,7 @@ public class ParticleGenerator {
 
     private int maxParticles;
 
-    private Texture particleTexture;
+    private TextureRegion particleTexture;
     private Color particleBatchColor;
 
     private List<Particle> particleList;
@@ -35,7 +36,7 @@ public class ParticleGenerator {
     public ParticleGenerator(int maxParticles, Texture particleTexture, OrthographicCamera camera)
     {
         this.maxParticles = maxParticles;
-        this.particleTexture = particleTexture;
+        this.particleTexture = new TextureRegion(particleTexture);
         this.camera = camera;
         this.particleList = new ArrayList<Particle>(this.maxParticles);
         this.particleBatch = new SpriteBatch();
@@ -113,8 +114,13 @@ public class ParticleGenerator {
                         this.particleTexture,
                         particle.getX() + (this.camera.position.x * this.counterCameraFrictionX),
                         particle.getY() + (this.camera.position.y * this.counterCameraFrictionY),
+                        particle.getWidth() / 2.f,
+                        particle.getHeight() / 2.f,
                         particle.getWidth(),
-                        particle.getHeight());
+                        particle.getHeight(),
+                        1.f,
+                        1.f,
+                        particle.getRotation());
 
                 this.particleBatch.setColor(Color.WHITE);
             }
@@ -130,7 +136,7 @@ public class ParticleGenerator {
         Collections.swap(this.particleList, index, this.nrOfAliveParticles-1);
     }
 
-    public void generateParticle(float x, float y, float width, float height, float lifetime, float velX, float velY)
+    public void generateParticle(float x, float y, float width, float height, float lifetime, float velX, float velY, float rotation)
     {
         if(this.nrOfAliveParticles < this.maxParticles)
         {
@@ -142,6 +148,7 @@ public class ParticleGenerator {
             particle.setSize(width,height);
             particle.setLifeTime(lifetime);
             particle.setVelocity(velX, velY);
+            particle.setRotation(rotation);
         }
     }
 
@@ -172,7 +179,7 @@ public class ParticleGenerator {
 
     public void setCoreParticleColorRGB(float r, float b, float g)
     {
-       this.particleBatchColor.set(r,b,g,1.f);
+       this.particleBatchColor.set(r,b,g,this.particleBatchColor.a);
     }
 
     public void setParticleColor(float r, float g, float b, float a)
@@ -194,5 +201,17 @@ public class ParticleGenerator {
     {
         this.counterCameraFrictionX = counterX;
         this.counterCameraFrictionY = counterY;
+    }
+
+    public Particle getLatestParticle()
+    {
+        if(this.nrOfAliveParticles == 0) return null;
+
+        return this.particleList.get(this.nrOfAliveParticles-1);
+    }
+
+    public int getNrOfParticles()
+    {
+        return this.nrOfAliveParticles;
     }
 }

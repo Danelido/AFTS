@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 public class Particle {
 
     private float x,y,width,height;
+    private float rotation;
     private float lifetime;
     private float velX, velY;
     private float initialLifeTime;
@@ -18,6 +19,7 @@ public class Particle {
         this.height = height;
         this.lifetime = lifetime;
         this.initialLifeTime = lifetime;
+        this.rotation = 0.f;
         this.velX = 0;
         this.velY = 0;
         this.color = new Color(1.f,1.f,1.f,0.f);
@@ -85,6 +87,11 @@ public class Particle {
         this.color.a = a;
     }
 
+    public void setRotation(float rotation)
+    {
+        this.rotation = rotation;
+    }
+
     public float getX() {
         return x;
     }
@@ -113,6 +120,11 @@ public class Particle {
     public float getInitialLifeTime()
     {
         return this.initialLifeTime;
+    }
+
+    public float getRotation()
+    {
+        return this.rotation;
     }
 
 }

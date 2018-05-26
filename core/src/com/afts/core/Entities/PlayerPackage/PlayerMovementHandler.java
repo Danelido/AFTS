@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 public class PlayerMovementHandler {
 
     private Player player;
+    private Vector2 direction; // Used by other classes
 
     // Movement stuff
     private float accelerationX;
@@ -44,6 +45,7 @@ public class PlayerMovementHandler {
         this.currentRotation = 0.f;
         this.rotationAcceleration = 550.f;
         this.rotationDeAcceleration = 550.f;
+        this.direction = new Vector2(0.f,-1.f);
 
     }
 
@@ -89,6 +91,7 @@ public class PlayerMovementHandler {
     {
         if(multiplierX > 0.f)
         {
+            this.direction.x = 1.f;
             // Movement
             if(this.currentVelocity.x < (this.maxVelocity.x))
             {
@@ -125,6 +128,7 @@ public class PlayerMovementHandler {
         }
         else if(multiplierX < 0.f)
         {
+            this.direction.x = -1.f;
             // Movement
             if(this.currentVelocity.x > -(this.maxVelocity.x ))
             {
@@ -160,17 +164,6 @@ public class PlayerMovementHandler {
 
         }
 
-    }
-
-    private void rotationOfPlayer()
-    {
-       /*float xDec = this.currentVelocity.x / this.maxVelocity.x;
-       float yDec = this.currentVelocity.y / this.maxVelocity.y;
-       float c = (float)Math.sqrt(Math.pow(xDec,2) + Math.pow(yDec,2));
-
-        float rotation = (float)(Math.acos((xDec/c)) * 180.f / (float)Math.PI) - 90.f;
-        //System.out.println("Rotation: " + rotation+ "\nCurrentRotation: " + this.currentRotation + "\n");
-        this.currentRotation = rotation;*/
     }
 
     private void stoping(float delta)
@@ -280,4 +273,24 @@ public class PlayerMovementHandler {
         return (int)Math.abs(this.currentVelocity.x);
     }
 
+    public Vector2 getCurrentVelocity()
+    {
+        return this.currentVelocity;
+    }
+
+    public Vector2 getDirection()
+    {
+        return this.direction;
+    }
+
+    public float getRotationBasedOnCurrentVelocity()
+    {
+        float xDec = this.currentVelocity.x / this.maxVelocity.x;
+       float yDec = this.currentVelocity.y / this.maxVelocity.y;
+       float c = (float)Math.sqrt(Math.pow(xDec,2) + Math.pow(yDec,2));
+
+        float rotation = (float)(Math.acos((xDec/c)) * 180.f / (float)Math.PI) - 90.f;
+        //System.out.println("Rotation: " + rotation+ "\nCurrentRotation: " + this.currentRotation + "\n");
+        return rotation;
+    }
 }

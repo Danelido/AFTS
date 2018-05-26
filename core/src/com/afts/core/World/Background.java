@@ -53,7 +53,8 @@ public class Background {
                     MathUtils.random(this.minParticleSize, this.maxParticleSize),
                     4.f,
                     0.f,
-                    MathUtils.random(-30.f, -10.f));
+                    MathUtils.random(-30.f, -10.f),
+                    0.f);
         }
         this.particleGenerator.update();
     }
@@ -72,7 +73,8 @@ public class Background {
                     MathUtils.random(this.minParticleSize, this.maxParticleSize),
                     4.f,
                     0.f,
-                    MathUtils.random(-30.f, -10.f));
+                    MathUtils.random(-30.f, -10.f),
+                    0.f);
             this.ticker = 0.f;
         }
 
