@@ -1,12 +1,12 @@
 package com.afts.core.Utility;
 
-import com.afts.core.Entities.Objects.Entity;
 import com.afts.core.Entities.Objects.EntityPointSetting;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
-public class PointCalculcator {
+public class PointCalculator {
 
+    // This assume that the poiints has already been initialized (the're not null)
     public static Vector2[] getPoints(Vector2[] points, Vector2 position, Vector2 size, Vector2 origin, EntityPointSetting setting, float degree)
     {
         Vector2[] vec = points.clone();
@@ -15,7 +15,6 @@ public class PointCalculcator {
         float rotatePointX;
         float rotatePointY;
 
-        // This assumes that the points is in following order
         // top-left, top-right, bottom-right, bottom-left
         if(setting == EntityPointSetting.RECTANGLE)
         {
@@ -55,7 +54,7 @@ public class PointCalculcator {
             vec[3].x = (posX - rotatePointX) * MathUtils.cosDeg(degree - 90.f) - (posY - rotatePointY) * MathUtils.sinDeg(degree- 90.f) + rotatePointX;
             vec[3].y = (posX - rotatePointX) * MathUtils.sinDeg(degree - 90.f) + (posY - rotatePointY) * MathUtils.cosDeg(degree- 90.f) + rotatePointY;
         }
-        // This assumes that the points is in following order
+
         // bottom-left, top, bottom-right
         else if(setting == EntityPointSetting.TRIANGLE)
         {

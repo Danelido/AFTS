@@ -22,21 +22,14 @@ Triangle:
 
      .     .
 
-Circle:
 
-          .
-
-      .       .
-
-          .
-
+Circle will use the radius for its calculations
  */
 
 // These effects will be set in entity class, this is just the settings
-
 public enum EntityPointSetting {
-    CIRCLE,
     RECTANGLE,
-    TRIANGLE
+    TRIANGLE,
+    CIRCLE
 
 }

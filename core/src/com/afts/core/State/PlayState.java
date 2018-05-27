@@ -1,7 +1,6 @@
 package com.afts.core.State;
 
 import com.afts.core.Entities.Collision.SATCollision;
-import com.afts.core.Entities.Collision.SATDebugRenderer;
 import com.afts.core.Entities.Objects.EntityManager;
 import com.afts.core.Entities.Objects.Rock;
 import com.afts.core.Entities.PlayerPackage.Player;
@@ -12,6 +11,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -28,9 +28,8 @@ public class PlayState extends State{
     private EntityManager entityManager;
     private SATCollision collision;
 
-    // Debug
+    // Debug ( for collision )
     private boolean up = false, down = false, left = false, right = false, rotate = false;
-    private SATDebugRenderer satdbgRenderer;
 
     public PlayState(StateManager stateManager) { super(stateManager); }
 
@@ -53,15 +52,20 @@ public class PlayState extends State{
         this.player = new Player(this.resourceHandler, this.camera, new Vector2(0.f,-(StaticSettings.GAME_HEIGHT/2.f)), new Vector2(32.f, 32.f));
         this.entityManager = new EntityManager(this.camera);
 
-        this.entityManager.addEntity(new Rock(new Vector2(0.f,200.f), new Vector2(64.f, 64.f), this.resourceHandler.getTexture("tile")));
+        for(int i = 0; i < 1000; i++)
+        {
+            this.entityManager.addEntity(
+                    new Rock(
+                            new Vector2(MathUtils.random(-1000.f, 1000),
+                                    MathUtils.random(100,1000)),
+                            new Vector2(MathUtils.random(8.f,16.f), MathUtils.random(8.f,16.f)),
+                    this.resourceHandler.getTexture("tile")));
+        }
 
-        this.collision = new SATCollision(this.camera);
+        this.collision = new SATCollision();
 
         // Initialize the background "More of a visual effect than anything else"
         this.background = new Background(this.camera, this.resourceHandler);
-
-        this.satdbgRenderer = new SATDebugRenderer(this.player, this.entityManager);
-
     }
 
     // This function is ONLY called after a state change where a state higher up in the "stack"
@@ -80,39 +84,35 @@ public class PlayState extends State{
         this.resourceHandler.addTexture("tile", "Textures/Random/whiteTile.png");
     }
 
-    float d = 0.f;
+    float d = 0.f; // temp
     @Override
     public void update()
     {
-        if(up)  PlayState.this.player.translatePosition(new Vector2(0, 200.f));
-        if(down)  PlayState.this.player.translatePosition(new Vector2(0, -200.f));
-        if(left)  PlayState.this.player.translatePosition(new Vector2(-200, 0.f));
-        if(right)  PlayState.this.player.translatePosition(new Vector2(200.f, 0.f));
+        if(up)      this.player.translatePosition(new Vector2(0, 200.f));
+        if(down)    this.player.translatePosition(new Vector2(0, -200.f));
+        if(left)    this.player.translatePosition(new Vector2(-200, 0.f));
+        if(right)   this.player.translatePosition(new Vector2(200.f, 0.f));
         if(rotate)
         {
-            d += 50 * Gdx.graphics.getDeltaTime();
+            d += 100 * Gdx.graphics.getDeltaTime();
             this.player.setRotation(d);
         }
 
-       this.camera.update();
        this.background.update();
        this.player.update();
 
        this.camera.position.lerp(this.player.getPosition().cpy().add(0.f,StaticSettings.GAME_HEIGHT/4.f, 0.f), Gdx.graphics.getDeltaTime() * 15.f);
-       this.collision.debugMode(this.satdbgRenderer);
+       this.camera.update();
+
     }
 
     @Override
     public void render()
     {
-        //this.background.render();
-       // this.entityManager.render();
-        //this.player.render();
-
-        this.satdbgRenderer.render(this.camera);
-        this.entityManager.update(this.player, this.collision);
+        this.background.render();
+        this.entityManager.updateAndRender(this.player,this.collision);
+        this.player.render();
     }
-
 
     private void inputHandler()
     {
@@ -149,7 +149,6 @@ public class PlayState extends State{
                 {
                     PlayState.this.stateManager.popCurrentState();
                 }
-
 
                 return false;
             }

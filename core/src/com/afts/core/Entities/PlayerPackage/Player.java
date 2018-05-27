@@ -2,16 +2,13 @@ package com.afts.core.Entities.PlayerPackage;
 
 import com.afts.core.Entities.Objects.EntityPointSetting;
 import com.afts.core.Particles.Generator.SpawnSetting;
-import com.afts.core.Utility.PointCalculcator;
+import com.afts.core.Utility.PointCalculator;
 import com.afts.core.Utility.ResourceHandler;
-import com.afts.core.Utility.StaticSettings;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -22,7 +19,6 @@ import com.badlogic.gdx.math.Vector3;
 public class Player {
 
     private Vector3 position; // Vector 3 to make camera lerp easier, just ignore z
-    private Vector3 position_lastframe;
     private Vector2 size;
     private Vector2 origin;
 
@@ -76,29 +72,22 @@ public class Player {
         this.particleHandler.getParticleGenerator().setParticleColor(1.f, .5f, 0.5f, 1.f);
         this.particleHandler.getParticleGenerator().setSpawnSetting(SpawnSetting.fade_in_fade_out);
 
-        this.points = new Vector2[4];
-        for(int i = 0; i < this.points.length; i++)
-        {
-            this.points[i] = new Vector2();
-        }
-
-        PointCalculcator.getPoints(this.points, new Vector2(this.position.x, this.position.y), this.size, this.origin , EntityPointSetting.RECTANGLE, 0.f);
+        this.setUpPoints();
 
     }
 
     public void update()
     {
-        this.position_lastframe = this.position.cpy();
         //this.movementHandler.update(this.userPressed, this.isUserPressing);
         this.particleHandler.update();
-
-        PointCalculcator.getPoints(this.points, new Vector2(this.position.x, this.position.y), this.size, this.origin , EntityPointSetting.RECTANGLE, this.rotation - 90.f);
+        PointCalculator.getPoints(this.points, new Vector2(this.position.x, this.position.y), this.size, this.origin , EntityPointSetting.RECTANGLE, this.rotation - 90.f);
     }
 
     public void render()
     {
 
         this.particleHandler.render();
+
         this.batch.setProjectionMatrix(this.camera.combined);
         this.batch.begin();
 
@@ -120,6 +109,16 @@ public class Player {
     {
         this.batch.dispose();
         this.particleHandler.dispose();
+    }
+
+    private void setUpPoints()
+    {
+        this.points = new Vector2[4];
+        for(int i = 0; i < this.points.length; i++)
+        {
+            this.points[i] = new Vector2();
+        }
+        PointCalculator.getPoints(this.points, new Vector2(this.position.x, this.position.y), this.size, this.origin , EntityPointSetting.RECTANGLE, 0.f);
     }
 
     public void translatePosition(Vector2 velocity)
@@ -157,11 +156,6 @@ public class Player {
         return this.rotation;
     }
 
-    public Vector3 getPositonLastFrame()
-    {
-        return this.position_lastframe;
-    }
-
     public PlayerMovementHandler getMovementHandler() {
         return this.movementHandler;
     }
@@ -179,5 +173,22 @@ public class Player {
     public void setColor(Color color)
     {
         this.playerColor = color;
+    }
+
+    public void setPosition(Vector3 position)
+    {
+        this.position = position;
+    }
+
+    public void setPosition(Vector2 position)
+    {
+        this.position.x = position.x;
+        this.position.y = position.y;
+    }
+
+    public void addToPosition(Vector2 amount)
+    {
+        this.position.x += amount.x;
+        this.position.y += amount.y;
     }
 }
