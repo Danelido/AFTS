@@ -63,19 +63,6 @@ public class ParticleGenerator {
 
             Particle particle = this.particleList.get(i);
 
-            // If this particular particle doesn't share the same RGB as the batch color then update it
-            if(particle.getColor().r != this.particleBatchColor.r ||
-                    particle.getColor().g != this.particleBatchColor.g ||
-                    particle.getColor().b != this.particleBatchColor.r ||
-                    (this.setting == SpawnSetting.normal && particle.getColor().a != this.particleBatchColor.a))
-            {
-                if(this.setting == SpawnSetting.normal)
-                    particle.setColor(this.particleBatchColor.r, this.particleBatchColor.g, this.particleBatchColor.b, this.particleBatchColor.a);
-                else
-                    particle.setColor(this.particleBatchColor.r, this.particleBatchColor.g, this.particleBatchColor.b);
-            }
-
-
             // Update position and lifetime ( Particle does that internally)
             particle.update(Gdx.graphics.getDeltaTime());
 
@@ -152,6 +139,23 @@ public class ParticleGenerator {
         }
     }
 
+    public void generateParticle(float x, float y, float width, float height, float lifetime, float velX, float velY, float rotation, Color color)
+    {
+        if(this.nrOfAliveParticles < this.maxParticles)
+        {
+            Particle particle = this.particleList.get(this.nrOfAliveParticles++);
+            particle.setPosition(
+                    x - (this.camera.position.x * this.counterCameraFrictionX),
+                    y - (this.camera.position.y * this.counterCameraFrictionY));
+
+            particle.setSize(width,height);
+            particle.setLifeTime(lifetime);
+            particle.setVelocity(velX, velY);
+            particle.setRotation(rotation);
+            particle.setColorRGB(color);
+        }
+    }
+
     private void fade_in_fade_out(Particle particle)
     {
         float timeLived = particle.getInitialLifeTime() - particle.getLifetime();
@@ -177,11 +181,6 @@ public class ParticleGenerator {
         return this.nrOfAliveParticles;
     }
 
-    public void setCoreParticleColorRGB(float r, float b, float g)
-    {
-       this.particleBatchColor.set(r,b,g,this.particleBatchColor.a);
-    }
-
     public void setParticleColor(float r, float g, float b, float a)
     {
         this.particleBatchColor.set(r,g,b,a);
@@ -203,15 +202,4 @@ public class ParticleGenerator {
         this.counterCameraFrictionY = counterY;
     }
 
-    public Particle getLatestParticle()
-    {
-        if(this.nrOfAliveParticles == 0) return null;
-
-        return this.particleList.get(this.nrOfAliveParticles-1);
-    }
-
-    public int getNrOfParticles()
-    {
-        return this.nrOfAliveParticles;
-    }
 }

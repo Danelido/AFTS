@@ -28,12 +28,7 @@ public class Player {
     private SpriteBatch batch;
     private Color playerColor;
 
-    // Where the user is pressing
-    private Vector3 userPressed;
-    private boolean isUserPressing;
-
     private OrthographicCamera camera;
-    private PlayerMovementHandler movementHandler;
 
     // Particles
     private PlayerParticleHandler particleHandler;
@@ -41,11 +36,14 @@ public class Player {
     // Collision
     private Vector2[] points;
 
+    // Controller for player (The joystick and throttle)
+    private PlayerController controller;
+
     public Player(ResourceHandler resources, OrthographicCamera camera, Vector2 position, Vector2 size)
     {
         this.batch = new SpriteBatch();
         this.playerColor = new Color(Color.WHITE);
-        this.textureRegion = new TextureRegion(resources.getTexture("tile"));
+        this.textureRegion = new TextureRegion(resources.getTexture("playerSprite"));
 
         this.camera = camera;
         this.size = size;
@@ -62,25 +60,22 @@ public class Player {
 
         this.rotation = 0.f;
 
-        this.userPressed = new Vector3(0.f, 0.f, 0.f);
-        this.isUserPressing = false;
-        this.movementHandler = new PlayerMovementHandler(this);
-
         this.particleHandler = new PlayerParticleHandler(this,PlayerParticleSetting.SPREAD, this.camera, 500,resources.getTexture("trailParticle"));
         this.particleHandler.setSize(12.f);
         this.particleHandler.setLifeTime(.4f);
         this.particleHandler.getParticleGenerator().setParticleColor(1.f, .5f, 0.5f, 1.f);
-        this.particleHandler.getParticleGenerator().setSpawnSetting(SpawnSetting.fade_in_fade_out);
+        this.particleHandler.getParticleGenerator().setSpawnSetting(SpawnSetting.fade_out);
 
         this.setUpPoints();
 
+        this.controller = new PlayerController(this, resources);
     }
 
     public void update()
     {
-        //this.movementHandler.update(this.userPressed, this.isUserPressing);
+        this.controller.update();
         this.particleHandler.update();
-        PointCalculator.getPoints(this.points, new Vector2(this.position.x, this.position.y), this.size, this.origin , EntityPointSetting.RECTANGLE, this.rotation - 90.f);
+        PointCalculator.getPoints(this.points, new Vector2(this.position.x, this.position.y), this.size, this.origin , EntityPointSetting.TRIANGLE, this.rotation - 90.f);
     }
 
     public void render()
@@ -102,6 +97,8 @@ public class Player {
 
         this.batch.setColor(Color.WHITE);
 
+        this.controller.render(this.batch);
+
         this.batch.end();
     }
 
@@ -113,12 +110,12 @@ public class Player {
 
     private void setUpPoints()
     {
-        this.points = new Vector2[4];
+        this.points = new Vector2[3];
         for(int i = 0; i < this.points.length; i++)
         {
             this.points[i] = new Vector2();
         }
-        PointCalculator.getPoints(this.points, new Vector2(this.position.x, this.position.y), this.size, this.origin , EntityPointSetting.RECTANGLE, 0.f);
+        PointCalculator.getPoints(this.points, new Vector2(this.position.x, this.position.y), this.size, this.origin , EntityPointSetting.TRIANGLE, 0.f);
     }
 
     public void translatePosition(Vector2 velocity)
@@ -126,14 +123,19 @@ public class Player {
         this.position.add(velocity.x * Gdx.graphics.getDeltaTime(), velocity.y * Gdx.graphics.getDeltaTime(), 0.f);
     }
 
-    public void setTouch(float x, float y)
+    public void registerTouchDown(float x, float y, int pointer)
     {
-        this.userPressed.set(x,y, 0.f);
+        this.controller.registerTouchDown(new Vector3(x,y,pointer));
     }
 
-    public void setIsBeingPressed(boolean condition)
+    public void registerTouchMoved(float x, float y, int pointer)
     {
-        this.isUserPressing = condition;
+        this.controller.registerTouchMoved(new Vector3(x,y,pointer));
+    }
+
+    public void registerTouchUp(float x, float y, int pointer)
+    {
+        this.controller.registerTouchUp(new Vector3(x,y,pointer));
     }
 
     public void setRotation(float rotation)
@@ -154,10 +156,6 @@ public class Player {
     public float getRotation()
     {
         return this.rotation;
-    }
-
-    public PlayerMovementHandler getMovementHandler() {
-        return this.movementHandler;
     }
 
     public Vector2 getSize()
@@ -190,5 +188,9 @@ public class Player {
     {
         this.position.x += amount.x;
         this.position.y += amount.y;
+    }
+
+    public PlayerController getController() {
+        return this.controller;
     }
 }

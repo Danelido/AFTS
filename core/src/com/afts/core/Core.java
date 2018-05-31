@@ -28,7 +28,7 @@ public class Core extends ApplicationAdapter {
 		this.stateManager.updateCurrentState();
 
 		// Clear screen and buffers etc
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0.10f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// Render current state

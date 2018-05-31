@@ -79,6 +79,8 @@ public class Particle {
         this.color.set(r,g,b,this.color.a);
     }
 
+    public void setColorRGB(Color newColor){this.color.set(newColor.r, newColor.g, newColor.b, this.color.a);}
+
     public void setAlpha(float a)
     {
         if(a < 0.f) a = 0.f;

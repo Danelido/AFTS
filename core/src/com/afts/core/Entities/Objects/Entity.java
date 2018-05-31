@@ -1,6 +1,8 @@
 package com.afts.core.Entities.Objects;
 
 import com.afts.core.Utility.PointCalculator;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,14 +11,17 @@ import com.badlogic.gdx.math.Vector2;
 public abstract class Entity {
 
     private EntityPointSetting pointSetting;
-    private Vector2 position;
-    private Vector2 size;
-    private Vector2 origin;
+    protected Vector2 position;
+    protected Vector2 size;
+    protected Vector2 origin;
+    protected Vector2 velocity;
+    protected Vector2[] points;
+    protected Color color;
 
-    private Vector2[] points;
-
-    private TextureRegion textureRegion;
-    private float rotation;
+    protected TextureRegion textureRegion;
+    protected float rotation;
+    protected float deAccelerationRate;
+    protected float collideForce;
 
     public Entity(Vector2 position, Vector2 size, Texture texture, EntityPointSetting pointSetting)
     {
@@ -26,11 +31,14 @@ public abstract class Entity {
         this.pointSetting = pointSetting;
         this.rotation = 0.f;
         this.textureRegion = new TextureRegion(texture);
-
+        this.velocity = new Vector2(0.f, 0.f);
+        this.deAccelerationRate = 0.1f;
+        this.collideForce = 100.f;
+        this.color = new Color(Color.WHITE);
         this.setUpPoints();
     }
 
-    public abstract void update();
+    public abstract void update(OrthographicCamera camera);
     public abstract void render(SpriteBatch batch);
     public abstract void dispose();
 
@@ -96,5 +104,40 @@ public abstract class Entity {
 
     public EntityPointSetting getPointSetting() {
         return this.pointSetting;
+    }
+
+    public void translatePosition(Vector2 velocity)
+    {
+        this.position.add(velocity);
+    }
+
+    public void setPosition(Vector2 position)
+    {
+        this.position = position;
+    }
+
+    public void setVelocity(Vector2 velocity)
+    {
+        this.velocity = velocity;
+    }
+
+    public void setDeAccelerationRate(float rate)
+    {
+        this.deAccelerationRate = rate;
+    }
+
+    public float getCollideForce()
+    {
+        return this.collideForce;
+    }
+
+    public void setColor(Color color)
+    {
+        this.color = color;
+    }
+
+    public Color getColor()
+    {
+        return this.color;
     }
 }
