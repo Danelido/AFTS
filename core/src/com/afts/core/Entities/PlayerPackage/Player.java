@@ -66,7 +66,7 @@ public class Player {
         // Set the origin of the player
         this.origin = new Vector2(this.size.x / 2.f, this.size.y / 2.f);
 
-        //Scale (Might be useful later if we want some cool effects on the player?)
+        //Scale (Might be useful later if we want some cool effects on the player?) -true
         this.scale = 1.f;
 
         // Rotation
@@ -132,6 +132,7 @@ public class Player {
                 this.size.x, this.size.y,
                 this.scale, this.scale,
                 this.rotation);
+
 
         this.batch.setColor(Color.WHITE);
 

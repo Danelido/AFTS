@@ -1,31 +1,25 @@
 package com.afts.core.Math;
 
 import com.afts.core.Utility.StaticSettings;
-import com.badlogic.gdx.math.Vector2;
 
 /**
  * Created by Steven on 14/05/2018.
- * A simple Y axis converter. It takes takes a desired Y-Coordinate and converts it to a Y-Down system, instead of the built in Y-Up.
- * We can now look at the system as a Y-down system
+ * A simple Y axis converter. It takes takes a desired Y-Coordinate and converts it to a Y-up system, instead of the built in Y-down.
+ * We can now look at the system as a Y-up system
  */
 
 public class CoordinateConverter {
 
-    int sizeOfScreenY;
-
-    public CoordinateConverter()
-    {
-        //Change this to the
-        this.sizeOfScreenY = StaticSettings.GAME_HEIGHT;
-    }
-
     //Takes a coordinate and returns the Y-Down equivalent
-    public int calcYCoord(int coordinate)
+    public static int calcYCoord(int coordinate)
     {
+        int sizeOfScreenY = StaticSettings.GAME_HEIGHT;
 
-        //If the coordinate is within the screenbounds
+        //System.out.println(sizeOfScreenY);
+
+        //If the coordinate is within the screenBounds
         if(coordinate <= sizeOfScreenY && coordinate >= 0) {
-            coordinate = this.sizeOfScreenY - coordinate;
+            coordinate = sizeOfScreenY - coordinate;
         }
         //Return a unusable coordinate
         else {
