@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
-// Need to be tested with android phone!
-// Right now it uses the mouse ( Mostly for debug and tweeking :P )
 public class PlayerMovementHandler {
 
     private Player player;
@@ -231,9 +229,27 @@ public class PlayerMovementHandler {
 
     }
 
+    public void bounce(Vector2 axis)
+    {
+        axis.nor();
+        float scalar = 0.25f;
+        float minForce = 50.f;
+        float force = Math.max(minForce, this.currentVelocity.len());
+
+
+        this.currentVelocity.x = axis.x * scalar * force;
+        this.currentVelocity.y = axis.y * scalar * force;
+
+    }
+
     public void setMove(boolean move)
     {
         this.move = move;
+    }
+
+    public void setVelocity(Vector2 velocity)
+    {
+        this.currentVelocity = velocity;
     }
 
     public float getRotationBasedOnCurrentVelocity()
@@ -244,6 +260,11 @@ public class PlayerMovementHandler {
         float rotation = (float)(Math.acos((xDec/c)) * 180.f / (float)Math.PI) - 90.f;
 
         return rotation;
+    }
+
+    public void addToVelocity(Vector2 vel)
+    {
+        this.currentVelocity.add(vel);
     }
 
     public Vector2 getCurrentVelocity()

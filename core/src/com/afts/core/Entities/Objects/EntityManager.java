@@ -1,13 +1,16 @@
 package com.afts.core.Entities.Objects;
 
+import com.afts.core.Entities.Collision.AABBCollision;
 import com.afts.core.Entities.Collision.SATCollision;
 import com.afts.core.Entities.PlayerPackage.Player;
 import com.afts.core.Particles.Generator.ParticleGenerator;
 import com.afts.core.Particles.Generator.SpawnSetting;
 import com.afts.core.Utility.ResourceHandler;
 import com.afts.core.Utility.StaticSettings;
-import com.badlogic.gdx.Gdx;
+import com.afts.core.Utility.Utils;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -21,11 +24,13 @@ public class EntityManager {
     private ParticleGenerator particleGenerator;
     private OrthographicCamera camera;
 
+    private Player player;
     private Vector2 separationDirection;
 
-    public EntityManager(OrthographicCamera camera, ResourceHandler resourceHandler)
+    public EntityManager(OrthographicCamera camera, Player player, ResourceHandler resourceHandler)
     {
         this.camera = camera;
+        this.player = player;
         this.entities = new ArrayList<Entity>();
         this.batch = new SpriteBatch();
         this.separationDirection = new Vector2();
@@ -34,48 +39,23 @@ public class EntityManager {
         this.particleGenerator.setSpawnSetting(SpawnSetting.fade_out);
     }
 
-    public void updateAndRender(Player player, SATCollision collision)
+    public void updateAndRender(SATCollision satCollision)
     {
         this.batch.setProjectionMatrix(this.camera.combined);
-
         this.batch.begin();
 
         for(int i = 0; i < this.entities.size(); i++)
         {
             Entity e = this.entities.get(i);
+            e.internal_update();
             e.update(this.camera);
 
             if(this.checkIfEntityIsInsideScreenBounds(e))
             {
-                e.updatePoints();
-
-                if (collision.collide(player, e)) {
-
-                    // This might be done somewhere else in the future (re-positioning the player that is)
-                    this.separationDirection.set(player.getPosition().x - e.getPosition().x, player.getPosition().y - e.getPosition().y);
-
-                    if (!this.hasSameSign(this.separationDirection.x, collision.getMinimumPenetrationAxis().x))
-                    {
-                        collision.getMinimumPenetrationAxis().x *= -1.f;
-                    }
-
-                    if (!this.hasSameSign(this.separationDirection.y, collision.getMinimumPenetrationAxis().y))
-                    {
-                        collision.getMinimumPenetrationAxis().y *= -1.f;
-                    }
-
-
-                    this.destroyEntity(i);
-                    //player.addToPosition(collision.getMinimumPenetrationAxis().scl(collision.getOverlap()));
-                    //e.translatePosition(new Vector2(collision.getMinimumPenetrationAxis()).scl(-1.f*collision.getOverlap()));
-                    //player.getMovementHandler().handleCollision(0.5f);
-
-                    //e.setVelocity(collision.getMinimumPenetrationAxis().scl(-1f * e.getCollideForce()));
-
-
+                if(AABBCollision.isColliding(e.getAabbRectangle(), this.player.getAabbRectangle()))
+                {
+                    this.checkCollisionWithSAT(i, satCollision);
                 }
-
-
             }
 
             e.render(this.batch);
@@ -86,7 +66,6 @@ public class EntityManager {
         this.particleGenerator.update();
         this.particleGenerator.render();
     }
-
 
     public void addEntity(Entity entity)
     {
@@ -125,6 +104,49 @@ public class EntityManager {
 
     }
 
+    private void checkCollisionWithSAT(int index, SATCollision satCollision)
+    {
+        Entity e = this.entities.get(index);
+        e.updatePoints();
+
+        if (satCollision.collide(player, e)) {
+
+            // This might be done somewhere else in the future (re-positioning the player that is)
+           this.separationDirection.set((player.getPosition().x + player.getOrigin().x) - (e.getPosition().x + e.getOrigin().x),
+                   (player.getPosition().y + player.getOrigin().y) - (e.getPosition().y + e.getOrigin().y));
+
+
+            if(!Utils.hasSameSign(separationDirection.x, satCollision.getMinimumPenetrationAxis().x))
+            {
+
+                satCollision.getMinimumPenetrationAxis().x *= -1.f;
+            }
+
+            if(!Utils.hasSameSign(separationDirection.y, satCollision.getMinimumPenetrationAxis().y))
+            {
+
+                satCollision.getMinimumPenetrationAxis().y *= -1.f;
+            }
+
+            if(e.getOnCollisionSetting() == OnCollisionSetting.DESTROY)
+            {
+                this.destroyEntity(index);
+
+            }else if(e.getOnCollisionSetting() == OnCollisionSetting.MOVEABLE)
+            {
+                e.bounce(this.separationDirection.cpy(), this.player.getController().getMovementHandler().getCurrentVelocity().cpy());
+                this.player.addToPosition(satCollision.getMinimumPenetrationAxis().cpy().scl(satCollision.getOverlap()));
+                this.player.getController().getMovementHandler().bounce(this.separationDirection.cpy());
+
+            }else if(e.getOnCollisionSetting() == OnCollisionSetting.SOLID)
+            {
+                this.player.addToPosition(satCollision.getMinimumPenetrationAxis().cpy().scl(satCollision.getOverlap()));
+                this.player.getController().getMovementHandler().bounce(this.separationDirection.cpy());
+            }
+
+        }
+    }
+
     private boolean checkIfEntityIsInsideScreenBounds(Entity e)
     {
         if(e.getPosition().x - this.camera.position.x > -(StaticSettings.GAME_WIDTH / 2.f) - 100.f && e.getPosition().x - this.camera.position.x < (StaticSettings.GAME_WIDTH /2.f) + 100.f &&
@@ -132,15 +154,8 @@ public class EntityManager {
         {
            return true;
         }
-            return false;
+            return true;
     }
 
-    private boolean hasSameSign(float a, float b)
-    {
-        if(a < 0 && b < 0) return true;
-        if(a > 0 && b > 0) return true;
-        if(a == b) return true;
 
-        return false;
-    }
 }

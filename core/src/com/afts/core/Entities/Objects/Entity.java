@@ -1,6 +1,8 @@
 package com.afts.core.Entities.Objects;
 
+import com.afts.core.Entities.Collision.AABBRectangle;
 import com.afts.core.Utility.PointCalculator;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,31 +12,40 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class Entity {
 
-    private EntityPointSetting pointSetting;
+    private CollisionPointSetup collisionPointSetup;
+    private OnCollisionSetting onCollisionSetting;
     protected Vector2 position;
     protected Vector2 size;
     protected Vector2 origin;
     protected Vector2 velocity;
-    protected Vector2[] points;
+    private Vector2[] points;
     protected Color color;
 
     protected TextureRegion textureRegion;
     protected float rotation;
-    protected float deAccelerationRate;
-    protected float collideForce;
 
-    public Entity(Vector2 position, Vector2 size, Texture texture, EntityPointSetting pointSetting)
+    protected float deAccelerationAmount;
+    private Vector2 initialPushVelocity;
+
+    private AABBRectangle aabbRectangle;
+
+    public Entity(Vector2 position, Vector2 size, float rotation, Texture texture, CollisionPointSetup collisionPointSetup, OnCollisionSetting onCollisionSetting)
     {
         this.position = position;
         this.size = size;
         this.origin = new Vector2(this.size.x/2.f, this.size.y/2.f);
-        this.pointSetting = pointSetting;
-        this.rotation = 0.f;
+        this.collisionPointSetup = collisionPointSetup;
+        this.onCollisionSetting = onCollisionSetting;
+        this.rotation = rotation;
         this.textureRegion = new TextureRegion(texture);
         this.velocity = new Vector2(0.f, 0.f);
-        this.deAccelerationRate = 0.1f;
-        this.collideForce = 100.f;
         this.color = new Color(Color.WHITE);
+        this.deAccelerationAmount = 1200.f;
+
+        // When player is colliding it sets a vector of an velocity in which the object will be pushed towards, this saves the initial value
+        // for a smoother de-acceleration
+        this.initialPushVelocity = new Vector2();
+        this.aabbRectangle = new AABBRectangle();
         this.setUpPoints();
     }
 
@@ -44,7 +55,7 @@ public abstract class Entity {
 
     private void setUpPoints()
     {
-        if(this.pointSetting == EntityPointSetting.RECTANGLE)
+        if(this.collisionPointSetup == CollisionPointSetup.RECTANGLE)
         {
             this.points = new Vector2[4];
             for(int i = 0; i < 4; i++)
@@ -53,7 +64,7 @@ public abstract class Entity {
             }
         }
 
-        if(this.pointSetting == EntityPointSetting.TRIANGLE)
+        if(this.collisionPointSetup == CollisionPointSetup.TRIANGLE)
         {
             this.points = new Vector2[3];
             for(int i = 0; i < 3; i++)
@@ -65,7 +76,33 @@ public abstract class Entity {
 
     public void updatePoints()
     {
-        PointCalculator.getPoints(this.points, this.position, this.size, this.origin, this.pointSetting, this.rotation);
+        PointCalculator.getPoints(this.points, this.position, this.size, this.origin, this.collisionPointSetup, this.rotation + 90.f);
+    }
+
+    public void internal_update(){
+       this.position.add(this.velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
+
+       if(this.velocity.x > 0.f)
+       {
+           this.velocity.x -= this.deAccelerationAmount * Math.abs(this.velocity.x /  this.initialPushVelocity.x) * Gdx.graphics.getDeltaTime();
+           if(this.velocity.x < 0.f) this.velocity.x = 0.f;
+       }else if(this.velocity.x < 0.f)
+       {
+           this.velocity.x += this.deAccelerationAmount * Math.abs(this.velocity.x /  this.initialPushVelocity.x) * Gdx.graphics.getDeltaTime();
+           if(this.velocity.x > 0.f) this.velocity.x = 0.f;
+       }
+
+        if(this.velocity.y > 0.f)
+        {
+            this.velocity.y -= this.deAccelerationAmount * Math.abs(this.velocity.y /  this.initialPushVelocity.y) * Gdx.graphics.getDeltaTime();
+            if(this.velocity.y < 0.f) this.velocity.y = 0.f;
+        }else if(this.velocity.y < 0.f)
+        {
+            this.velocity.y += this.deAccelerationAmount * Math.abs(this.velocity.y /  this.initialPushVelocity.y) * Gdx.graphics.getDeltaTime();
+            if(this.velocity.y > 0.f) this.velocity.y = 0.f;
+        }
+
+        this.aabbRectangle.update(this.position, this.size, this.origin);
     }
 
     public void setRotation(float rotation)
@@ -98,12 +135,12 @@ public abstract class Entity {
         return this.origin;
     }
 
-    public TextureRegion getTextureRegion() {
-        return this.textureRegion;
+    public CollisionPointSetup getCollisionPointSetup() {
+        return this.collisionPointSetup;
     }
 
-    public EntityPointSetting getPointSetting() {
-        return this.pointSetting;
+    public OnCollisionSetting getOnCollisionSetting() {
+        return this.onCollisionSetting;
     }
 
     public void translatePosition(Vector2 velocity)
@@ -121,14 +158,18 @@ public abstract class Entity {
         this.velocity = velocity;
     }
 
-    public void setDeAccelerationRate(float rate)
+    public void bounce(Vector2 axis, Vector2 playerVelocity)
     {
-        this.deAccelerationRate = rate;
-    }
+        axis.nor();
+        axis.scl(-1.f);
+        float force = playerVelocity.len();
+        float scalar = 0.5f;
 
-    public float getCollideForce()
-    {
-        return this.collideForce;
+        this.velocity.x = axis.x * scalar * force;
+        this.velocity.y = axis.y * scalar * force;
+
+        this.initialPushVelocity = this.velocity.cpy();
+
     }
 
     public void setColor(Color color)
@@ -140,4 +181,9 @@ public abstract class Entity {
     {
         return this.color;
     }
+
+    public AABBRectangle getAabbRectangle() {
+        return this.aabbRectangle;
+    }
 }
+
