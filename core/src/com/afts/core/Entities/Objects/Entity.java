@@ -1,6 +1,7 @@
 package com.afts.core.Entities.Objects;
 
 import com.afts.core.Entities.Collision.AABBRectangle;
+import com.afts.core.Entities.Collision.PointDebugRenderer;
 import com.afts.core.Utility.PointCalculator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -55,23 +56,13 @@ public abstract class Entity {
 
     private void setUpPoints()
     {
-        if(this.collisionPointSetup == CollisionPointSetup.RECTANGLE)
+
+        this.points = new Vector2[PointCalculator.getNumberOfPointsForSpecifiedSetting(this.collisionPointSetup)];
+        for(int i = 0; i < PointCalculator.getNumberOfPointsForSpecifiedSetting(this.collisionPointSetup); i++)
         {
-            this.points = new Vector2[4];
-            for(int i = 0; i < 4; i++)
-            {
-                this.points[i] = new Vector2();
-            }
+            this.points[i] = new Vector2();
         }
 
-        if(this.collisionPointSetup == CollisionPointSetup.TRIANGLE)
-        {
-            this.points = new Vector2[3];
-            for(int i = 0; i < 3; i++)
-            {
-                this.points[i] = new Vector2();
-            }
-        }
     }
 
     public void updatePoints()
@@ -103,6 +94,8 @@ public abstract class Entity {
         }
 
         this.aabbRectangle.update(this.position, this.size, this.origin);
+
+
     }
 
     public void setRotation(float rotation)
@@ -163,7 +156,7 @@ public abstract class Entity {
         axis.nor();
         axis.scl(-1.f);
         float force = playerVelocity.len();
-        float scalar = 0.5f;
+        float scalar = 0.75f;
 
         this.velocity.x = axis.x * scalar * force;
         this.velocity.y = axis.y * scalar * force;

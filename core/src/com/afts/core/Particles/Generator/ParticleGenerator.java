@@ -18,7 +18,6 @@ public class ParticleGenerator {
     private int maxParticles;
 
     private TextureRegion particleTexture;
-    private Color particleBatchColor;
 
     private List<Particle> particleList;
     private int nrOfAliveParticles;
@@ -41,8 +40,6 @@ public class ParticleGenerator {
         this.particleList = new ArrayList<Particle>(this.maxParticles);
         this.particleBatch = new SpriteBatch();
         this.nrOfAliveParticles = 0;
-        this.particleBatchColor = new Color();
-        this.particleBatchColor.set(1.f, 1.f, 1.f, 1.f);
         this.setting = SpawnSetting.normal;
         this.maxAlphaAllowed = 1.f;
 
@@ -54,6 +51,7 @@ public class ParticleGenerator {
         {
             this.particleList.add(new Particle(0.f,0.f, 0.f, 0.f, 0.f));
         }
+
 
     }
 
@@ -67,11 +65,52 @@ public class ParticleGenerator {
             particle.update(Gdx.graphics.getDeltaTime());
 
             //--- Update particles based on setting here ---
+
+
             if(this.setting == SpawnSetting.fade_in_fade_out)
+            {
                 this.fade_in_fade_out(particle);
+            }
 
             else if(this.setting == SpawnSetting.fade_out)
+            {
                 this.fade_out(particle);
+            }
+
+            else if(this.setting == SpawnSetting.shrink)
+            {
+                this.shrink(particle);
+            }
+
+            else if(this.setting == SpawnSetting.shrink_fade_out)
+            {
+                this.shrink(particle);
+                this.fade_out(particle);
+            }
+
+            else if(this.setting == SpawnSetting.shrink_fade_in_fade_out)
+            {
+                this.shrink(particle);
+                this.fade_in_fade_out(particle);
+            }
+
+            else if(this.setting == SpawnSetting.expand_and_shrink)
+            {
+                this.expand_and_shrink(particle);
+            }
+
+            else if(this.setting == SpawnSetting.expand_and_shrink_fade_out)
+            {
+                this.expand_and_shrink(particle);
+                this.fade_out(particle);
+            }
+
+            else if(this.setting == SpawnSetting.expand_and_shrink_fade_in_fade_out)
+            {
+                this.expand_and_shrink(particle);
+                this.fade_in_fade_out(particle);
+            }
+
             //---                                        ---
 
             if(particle.isDead())
@@ -82,13 +121,14 @@ public class ParticleGenerator {
 
         }
 
-        this.particleBatch.setProjectionMatrix(this.camera.combined);
+
     }
 
     public void render()
     {
         if(this.nrOfAliveParticles > 0)
         {
+            this.particleBatch.setProjectionMatrix(this.camera.combined);
             this.particleBatch.enableBlending();
             this.particleBatch.begin();
 
@@ -120,22 +160,8 @@ public class ParticleGenerator {
     private void swapParticleIfNeeded(int index)
     {
         if(index != (this.nrOfAliveParticles - 1))
-        Collections.swap(this.particleList, index, this.nrOfAliveParticles-1);
-    }
-
-    public void generateParticle(float x, float y, float width, float height, float lifetime, float velX, float velY, float rotation)
-    {
-        if(this.nrOfAliveParticles < this.maxParticles)
         {
-            Particle particle = this.particleList.get(this.nrOfAliveParticles++);
-            particle.setPosition(
-                    x - (this.camera.position.x * this.counterCameraFrictionX),
-                    y - (this.camera.position.y * this.counterCameraFrictionY));
-
-            particle.setSize(width,height);
-            particle.setLifeTime(lifetime);
-            particle.setVelocity(velX, velY);
-            particle.setRotation(rotation);
+            Collections.swap(this.particleList, index, this.nrOfAliveParticles - 1);
         }
     }
 
@@ -149,10 +175,12 @@ public class ParticleGenerator {
                     y - (this.camera.position.y * this.counterCameraFrictionY));
 
             particle.setSize(width,height);
+            particle.setInitialSize(width,height);
             particle.setLifeTime(lifetime);
             particle.setVelocity(velX, velY);
             particle.setRotation(rotation);
             particle.setColorRGB(color);
+            particle.setAlpha(0.f);
         }
     }
 
@@ -171,6 +199,45 @@ public class ParticleGenerator {
         particle.setAlpha(alpha);
     }
 
+    private void shrink(Particle particle)
+    {
+        if(this.setting == SpawnSetting.shrink)
+       particle.setAlpha(this.maxAlphaAllowed);
+
+       float fraction = particle.getLifetime() / particle.getInitialLifeTime();
+
+       float newWidth = particle.getStartWidth() * fraction;
+       float newHeight = particle.getStartHeight() * fraction;
+
+       float newPositionX = particle.getX() + (particle.getWidth() - newWidth) / 2.f;
+       float newPositionY = particle.getY() + (particle.getHeight() - newHeight) / 2.f;
+
+
+       particle.setPosition(newPositionX, newPositionY);
+       particle.setSize(newWidth,newHeight);
+
+    }
+
+    private void expand_and_shrink(Particle particle)
+    {
+        if(this.setting == SpawnSetting.expand_and_shrink)
+        particle.setAlpha(this.maxAlphaAllowed);
+
+        float timeLived = particle.getInitialLifeTime() - particle.getLifetime();
+        float halfTotalLifetime = particle.getInitialLifeTime() / 2.f;
+
+        float newWidth = -Math.abs( (timeLived - halfTotalLifetime) * (particle.getStartWidth() / halfTotalLifetime)) + particle.getStartWidth();
+        float newHeight = -Math.abs( (timeLived - halfTotalLifetime) * (particle.getStartHeight() / halfTotalLifetime)) + particle.getStartHeight();
+
+
+        float newPositionX = particle.getX() + (particle.getWidth() - newWidth) / 2.f;
+        float newPositionY = particle.getY() + (particle.getHeight() - newHeight) / 2.f;
+
+        particle.setPosition(newPositionX, newPositionY);
+        particle.setSize(newWidth,newHeight);
+
+    }
+
     public void dispose()
     {
         this.particleBatch.dispose();
@@ -179,11 +246,6 @@ public class ParticleGenerator {
     public float getNrOfAliveParticles()
     {
         return this.nrOfAliveParticles;
-    }
-
-    public void setParticleColor(float r, float g, float b, float a)
-    {
-        this.particleBatchColor.set(r,g,b,a);
     }
 
     public void setSpawnSetting(SpawnSetting setting)

@@ -29,7 +29,7 @@ Circle will use the radius for its calculations
 // These effects will be set in entity class, this is just the settings
 public enum CollisionPointSetup {
     RECTANGLE,
-    TRIANGLE,
-    CIRCLE // Not yet implemented
+    TRIANGLE
+   // CIRCLE // Not yet implemented
 
 }

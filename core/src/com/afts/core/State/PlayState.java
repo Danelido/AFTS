@@ -3,6 +3,7 @@ package com.afts.core.State;
 import com.afts.core.Entities.Collision.PointDebugRenderer;
 import com.afts.core.Entities.Collision.SATCollision;
 import com.afts.core.Entities.Objects.EntityManager;
+import com.afts.core.Entities.Objects.OnCollisionSetting;
 import com.afts.core.Entities.Objects.Rock;
 import com.afts.core.Entities.PlayerPackage.Player;
 import com.afts.core.Utility.ResourceHandler;
@@ -30,7 +31,7 @@ public class PlayState extends State{
     private SATCollision collision;
 
     //Debug
-    private boolean up,down,left,right, rotate;
+    private boolean up,down,left,right;
     private float speed = 100.f;
 
     public PlayState(StateManager stateManager) { super(stateManager); }
@@ -40,28 +41,52 @@ public class PlayState extends State{
     {
         // Creates and initializes inputProcessor
         this.inputHandler();
-
         // Tells GDX that it's now time to listen to this class inputHandler
         Gdx.input.setInputProcessor(this.inputProcessor);
 
         this.resourceHandler = new ResourceHandler();
-
         this.initializeResources();
 
         this.camera = new OrthographicCamera(StaticSettings.GAME_WIDTH, StaticSettings.GAME_HEIGHT);
-        this.camera.zoom = 2.f;
+        this.camera.zoom = 1.f;
 
-        this.player = new Player(this.resourceHandler, this.camera, new Vector2(0.f,-(StaticSettings.GAME_HEIGHT/2.f)), new Vector2(32.f, 32.f));
+        this.player = new Player(this.resourceHandler, this.camera, new Vector2(0.f,-50.f), new Vector2(20.f, 20.f));
         this.entityManager = new EntityManager(this.camera, this.player, this.resourceHandler);
 
-        for(int i = 0; i < 10000; i++) {
-            this.entityManager.addEntity(
-                    new Rock(
-                            new Vector2(MathUtils.random(-1500.f, 1500.f), MathUtils.random(0.f, 1500.f)),
-                            new Vector2(5, 5.f),
-                            this.resourceHandler.getTexture("tile")));
+        // 10k destroyable entities, sick
+        for(int i = 0; i < 100; i++) {
+           for(int j = 0; j < 100; j++)
+           {
+               this.entityManager.addEntity(
+                       new Rock(
+                               new Vector2(j* 11.f, i * 11.f),
+                               new Vector2(10, 10.f),
+                               this.resourceHandler.getTexture("tile"),
+                               OnCollisionSetting.DESTROY));
+           }
         }
 
+        for(int i = 0; i < 10; i++)
+        {
+            this.entityManager.addEntity(
+                    new Rock(
+                            new Vector2(MathUtils.random(-2000, -500), MathUtils.random(0, 1500)),
+                            new Vector2(50, 50.f),
+                            this.resourceHandler.getTexture("tile"),
+                            OnCollisionSetting.MOVEABLE));
+        }
+
+        for(int i = 0; i < 10; i++)
+        {
+            this.entityManager.addEntity(
+                    new Rock(
+                            new Vector2(MathUtils.random(1600, 3100), MathUtils.random(0, 1500)),
+                            new Vector2(50, 50.f),
+                            this.resourceHandler.getTexture("tile"),
+                            OnCollisionSetting.SOLID));
+        }
+
+        // Might make this class static in the future
         this.collision = new SATCollision();
 
         // Initialize the background "More of a visual effect than anything else"
@@ -87,6 +112,7 @@ public class PlayState extends State{
         this.resourceHandler.addTexture("backgroundParticle", "Textures/Particles/particle_2.png");
         this.resourceHandler.addTexture("trailParticle", "Textures/Particles/particle_trail.png");
         this.resourceHandler.addTexture("tile", "Textures/Random/whiteTile.png");
+        this.resourceHandler.addTexture("particle_03", "Textures/Particles/particle_03.png");
     }
 
     @Override
@@ -94,7 +120,7 @@ public class PlayState extends State{
     {
        this.background.update();
        this.player.update();
-       this.camera.position.lerp(this.player.getPosition().cpy().add(0.f,StaticSettings.GAME_HEIGHT/4.f, 0.f), Gdx.graphics.getDeltaTime() * 15.f);
+       this.camera.position.lerp(this.player.getPosition().cpy().add(this.player.getOrigin().x,this.player.getOrigin().y, 0.f), Gdx.graphics.getDeltaTime() * 15.f);
        this.camera.update();
 
        //Debug code
@@ -102,7 +128,6 @@ public class PlayState extends State{
         if(this.down) this.player.getController().getMovementHandler().addToVelocity(new Vector2(0.f, -speed * Gdx.graphics.getDeltaTime()));
         if(this.left) this.player.getController().getMovementHandler().addToVelocity(new Vector2(-speed * Gdx.graphics.getDeltaTime(), 0.f ));
         if(this.right) this.player.getController().getMovementHandler().addToVelocity(new Vector2(speed * Gdx.graphics.getDeltaTime(), 0.f));
-        if(this.rotate) this.player.addToRotation(100.f * Gdx.graphics.getDeltaTime());
 
     }
     @Override
@@ -118,10 +143,6 @@ public class PlayState extends State{
         this.inputProcessor = new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
-                if(Input.Keys.E == keycode)
-                {
-                    PlayState.this.stateManager.popCurrentState();
-                }
 
                 if(Input.Keys.W == keycode)
                 {
@@ -142,12 +163,6 @@ public class PlayState extends State{
                 {
                     PlayState.this.right = true;
                 }
-
-                if(Input.Keys.R == keycode)
-                {
-                    PlayState.this.rotate = true;
-                }
-
 
                 return false;
             }
@@ -174,10 +189,6 @@ public class PlayState extends State{
                     PlayState.this.right = false;
                 }
 
-                if(Input.Keys.R == keycode)
-                {
-                    PlayState.this.rotate = false;
-                }
                 return false;
             }
 

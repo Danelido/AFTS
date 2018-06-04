@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 public class Particle {
 
     private float x,y,width,height;
+    private float startWidth, startHeight;
     private float rotation;
     private float lifetime;
     private float velX, velY;
@@ -15,6 +16,8 @@ public class Particle {
     {
         this.x = x;
         this.y = y;
+        this.startWidth = width;
+        this.startHeight = height;
         this.width = width;
         this.height = height;
         this.lifetime = lifetime;
@@ -36,7 +39,12 @@ public class Particle {
         if(this.lifetime < 0.f)
         {
            this.lifetime = 0.f;
+           this.x = 0.f;
+           this.y = 0.f;
+           this.width = 0.f;
+           this.height = 0.f;
            this.color.a = 0.f;
+
         }
     }
 
@@ -67,16 +75,6 @@ public class Particle {
     {
         this.velX = velX;
         this.velY = velY;
-    }
-
-    public void setColor(float r, float g, float b, float a)
-    {
-        this.color.set(r,g,b,a);
-    }
-
-    public void setColor(float r, float g, float b)
-    {
-        this.color.set(r,g,b,this.color.a);
     }
 
     public void setColorRGB(Color newColor){this.color.set(newColor.r, newColor.g, newColor.b, this.color.a);}
@@ -127,6 +125,22 @@ public class Particle {
     public float getRotation()
     {
         return this.rotation;
+    }
+
+    public float getStartWidth()
+    {
+        return this.startWidth;
+    }
+
+    public float getStartHeight()
+    {
+        return this.startHeight;
+    }
+
+    public void setInitialSize(float w, float h)
+    {
+        this.startWidth = w;
+        this.startHeight = h;
     }
 
 }

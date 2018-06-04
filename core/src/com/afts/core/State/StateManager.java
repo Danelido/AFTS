@@ -55,7 +55,7 @@ public class StateManager {
 
     public void popCurrentState()
     {
-        if(!this.states.isEmpty() && this.states.get(this.states.size() - 1) != null)
+        if(!this.states.isEmpty() && this.states.get(this.states.size() - 1) != null && this.states.size() > 1)
         {
             this.states.get(this.states.size() - 1).dispose();
             this.states.remove(this.states.size() - 1);

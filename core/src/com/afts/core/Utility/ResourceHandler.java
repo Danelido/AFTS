@@ -32,7 +32,10 @@ public class ResourceHandler {
         FileHandle file = Gdx.files.internal(pathToFile);
         if(file.exists())
         {
-            this.textureContainer.put(key, new Texture(file));
+            Texture texture = new Texture(file);
+
+            texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            this.textureContainer.put(key, texture);
         }else
         {
           Gdx.app.log("ERROR", "Texture with key[" + key + "] does not exist!");

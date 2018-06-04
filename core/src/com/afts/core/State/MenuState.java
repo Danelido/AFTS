@@ -51,15 +51,7 @@ public class MenuState extends State {
     {
         this.inputProcessor = new InputProcessor() {
             @Override
-            public boolean keyDown(int keycode) {
-
-                if(Input.Keys.E == keycode)
-                {
-                    MenuState.this.stateManager.pushNewState(new PlayState(MenuState.this.stateManager));
-                }
-
-                return false;
-            }
+            public boolean keyDown(int keycode) { return false; }
 
             @Override
             public boolean keyUp(int keycode) {

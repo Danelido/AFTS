@@ -3,11 +3,13 @@ package com.afts.core.Entities.Objects;
 import com.afts.core.Entities.Collision.AABBCollision;
 import com.afts.core.Entities.Collision.SATCollision;
 import com.afts.core.Entities.PlayerPackage.Player;
+import com.afts.core.Graphics.TextRenderer;
 import com.afts.core.Particles.Generator.ParticleGenerator;
 import com.afts.core.Particles.Generator.SpawnSetting;
 import com.afts.core.Utility.ResourceHandler;
 import com.afts.core.Utility.StaticSettings;
 import com.afts.core.Utility.Utils;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -27,6 +29,8 @@ public class EntityManager {
     private Player player;
     private Vector2 separationDirection;
 
+    private TextRenderer textRenderer;
+
     public EntityManager(OrthographicCamera camera, Player player, ResourceHandler resourceHandler)
     {
         this.camera = camera;
@@ -34,15 +38,20 @@ public class EntityManager {
         this.entities = new ArrayList<Entity>();
         this.batch = new SpriteBatch();
         this.separationDirection = new Vector2();
-        this.particleGenerator = new ParticleGenerator(500, resourceHandler.getTexture("tile"), this.camera);
+        this.particleGenerator = new ParticleGenerator(5000, resourceHandler.getTexture("tile"), this.camera);
         this.particleGenerator.setMaxAlphaForParticles(0.8f);
-        this.particleGenerator.setSpawnSetting(SpawnSetting.fade_out);
+        this.particleGenerator.setSpawnSetting(SpawnSetting.shrink_fade_out);
+
+        this.textRenderer = new TextRenderer();
     }
 
     public void updateAndRender(SATCollision satCollision)
     {
         this.batch.setProjectionMatrix(this.camera.combined);
         this.batch.begin();
+
+        int entitiesGettingAABB = 0;
+        int entitiesGettingSAT = 0;
 
         for(int i = 0; i < this.entities.size(); i++)
         {
@@ -52,19 +61,43 @@ public class EntityManager {
 
             if(this.checkIfEntityIsInsideScreenBounds(e))
             {
+                entitiesGettingAABB++;
                 if(AABBCollision.isColliding(e.getAabbRectangle(), this.player.getAabbRectangle()))
                 {
+
+                    entitiesGettingSAT++;
                     this.checkCollisionWithSAT(i, satCollision);
                 }
+
+                e.render(this.batch);
             }
 
-            e.render(this.batch);
+
+
+
         }
+        this.textRenderer.addTextToRenderQue(
+                "DEBUG INFO (inside EntityManager class)\n"
+                        + "\nNumber of entities: " + this.entities.size()
+                        + "\nNumber of entity particles: " + this.particleGenerator.getNrOfAliveParticles()
+                        + "\nProcessing AABB-collision on " + entitiesGettingAABB + " entities"
+                        + "\nProcessing SAT-collision on " + entitiesGettingSAT + " entities"
+                        + "\nPlayer Velocity: " + this.player.getController().getMovementHandler().getCurrentVelocity().toString()
+                        + "\nNumber of player particles: " + this.player.getNrOfParticles()
+                        + "\n\nFPS: " + Gdx.graphics.getFramesPerSecond()
+                        + "\nDelta: " + Gdx.graphics.getDeltaTime(),
+                new Vector2(10.f,StaticSettings.GAME_HEIGHT - 10.f),
+                Color.ORANGE,
+                1.f
+        );
+
+        this.textRenderer.render(this.batch,this.camera);
 
         this.batch.end();
 
         this.particleGenerator.update();
         this.particleGenerator.render();
+
     }
 
     public void addEntity(Entity entity)
@@ -86,13 +119,13 @@ public class EntityManager {
     private void destroyEntity(int index)
     {
         Entity e = this.entities.get(index);
-        for(int i = 0; i < 50; i++)
+        for(int i = 0; i < 10; i++)
         {
             this.particleGenerator.generateParticle(
                     e.position.x + e.origin.x,
                     e.position.y + e.origin.y,
-                    e.size.x / 4.f,
-                    e.size.y / 4.f,
+                    e.size.x,
+                    e.size.y,
                     MathUtils.random(0.5f,2.f),
                     MathUtils.random(-300.f,300.f),
                     MathUtils.random(-300.f,300.f),
@@ -128,6 +161,8 @@ public class EntityManager {
                 satCollision.getMinimumPenetrationAxis().y *= -1.f;
             }
 
+            this.player.setColor(e.getColor());
+
             if(e.getOnCollisionSetting() == OnCollisionSetting.DESTROY)
             {
                 this.destroyEntity(index);
@@ -154,7 +189,7 @@ public class EntityManager {
         {
            return true;
         }
-            return true;
+            return false;
     }
 
 

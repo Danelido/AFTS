@@ -236,7 +236,6 @@ public class PlayerMovementHandler {
         float minForce = 50.f;
         float force = Math.max(minForce, this.currentVelocity.len());
 
-
         this.currentVelocity.x = axis.x * scalar * force;
         this.currentVelocity.y = axis.y * scalar * force;
 
@@ -280,5 +279,10 @@ public class PlayerMovementHandler {
     public boolean isMoving()
     {
         return this.move;
+    }
+
+    public Vector2 getVelocityFractionABS()
+    {
+        return new Vector2(Math.abs(this.currentVelocity.x) / this.maxSpeed, Math.abs(this.currentVelocity.y) / this.maxSpeed);
     }
 }

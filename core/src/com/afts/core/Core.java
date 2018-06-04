@@ -1,6 +1,7 @@
 package com.afts.core;
 
 import com.afts.core.State.MenuState;
+import com.afts.core.State.PlayState;
 import com.afts.core.State.StateManager;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -15,7 +16,7 @@ public class Core extends ApplicationAdapter {
 	public void create()
 	{
 		this.stateManager = new StateManager();
-		this.stateManager.pushNewState(new MenuState(this.stateManager));
+		this.stateManager.pushNewState(new PlayState(this.stateManager));
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 

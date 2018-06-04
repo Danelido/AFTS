@@ -5,6 +5,7 @@ import com.afts.core.Particles.Generator.SpawnSetting;
 import com.afts.core.Utility.ResourceHandler;
 import com.afts.core.Utility.StaticSettings;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -29,52 +30,36 @@ public class Background {
         this.batch = new SpriteBatch();
 
         this.particleGenerator = new ParticleGenerator(500, resources.getTexture("basicParticle"), camera);
-        this.particleGenerator.setParticleColor(1.f,1.f,1.f,0.25f);
-        this.particleGenerator.setSpawnSetting(SpawnSetting.fade_in_fade_out);
-        this.particleGenerator.setMaxAlphaForParticles(0.4f);
-        this.particleGenerator.setParticleCounterCameraFriction(0.95f, 1.f);
+        this.particleGenerator.setSpawnSetting(SpawnSetting.expand_and_shrink_fade_in_fade_out);
+        this.particleGenerator.setMaxAlphaForParticles(.25f);
+        this.particleGenerator.setParticleCounterCameraFriction(1.f, 1.f);
 
         // Basically spawn particles a little bit outside the screen
         this.outerXBounds = 100.f;
         this.outerYBounds = 100.f;
 
-        this.onStartUp();
     }
 
-    private void onStartUp()
-    {
-        for(int i = 0; i < this.particleFrequency; i++) {
-            this.particleGenerator.generateParticle(
-                    MathUtils.random(((-StaticSettings.GAME_WIDTH / 2.f) * this.camera.zoom + this.camera.position.x - this.outerXBounds),
-                            ((StaticSettings.GAME_WIDTH / 2.f) * this.camera.zoom + this.camera.position.x + this.outerXBounds)),
-                    MathUtils.random(((-StaticSettings.GAME_HEIGHT / 2.f) * this.camera.zoom + this.camera.position.y - this.outerYBounds),
-                            ((StaticSettings.GAME_HEIGHT / 2.f) * this.camera.zoom + this.camera.position.y + this.outerYBounds)),
-                    MathUtils.random(this.minParticleSize, this.maxParticleSize),
-                    MathUtils.random(this.minParticleSize, this.maxParticleSize),
-                    4.f,
-                    0.f,
-                    MathUtils.random(-30.f, -10.f),
-                    0.f);
-        }
-        this.particleGenerator.update();
-    }
+
 
     public void update()
     {
         this.ticker += Gdx.graphics.getDeltaTime();
         if(this.ticker >= 1.f / this.particleFrequency)
         {
+            float size = MathUtils.random(this.minParticleSize, this.maxParticleSize);
             this.particleGenerator.generateParticle(
                     MathUtils.random(((-StaticSettings.GAME_WIDTH / 2.f) * this.camera.zoom + this.camera.position.x - this.outerXBounds),
                             ((StaticSettings.GAME_WIDTH / 2.f) * this.camera.zoom + this.camera.position.x + this.outerXBounds) ),
                     MathUtils.random(((-StaticSettings.GAME_HEIGHT / 2.f) * this.camera.zoom + this.camera.position.y - this.outerYBounds),
                             ((StaticSettings.GAME_HEIGHT / 2.f) * this.camera.zoom + this.camera.position.y + this.outerYBounds)),
-                    MathUtils.random(this.minParticleSize, this.maxParticleSize),
-                    MathUtils.random(this.minParticleSize, this.maxParticleSize),
+                    size,
+                    size,
                     4.f,
                     0.f,
-                    MathUtils.random(-30.f, -10.f),
-                    0.f);
+                    MathUtils.random(0.f, 0.f),
+                    0.f,
+                    new Color(1.f,203.f/255.f,0.f/255.f,1.f));
             this.ticker = 0.f;
         }
 

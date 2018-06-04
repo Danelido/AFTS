@@ -8,11 +8,11 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Rock extends Entity {
 
-    public Rock(Vector2 position, Vector2 size,Texture texture) {
-        super(position, size, 0.f , texture, CollisionPointSetup.RECTANGLE, OnCollisionSetting.MOVEABLE);
+    public Rock(Vector2 position, Vector2 size,Texture texture, OnCollisionSetting setting) {
+        super(position, size, 0.f , texture, CollisionPointSetup.RECTANGLE, setting);
         this.rotation = MathUtils.random(-90.f,90.f);
+        this.color.set(MathUtils.random(0.1f,0.95f), MathUtils.random(0.1f,0.95f), MathUtils.random(0.1f,0.95f), 1.f);
     }
-
 
     @Override
     public void update(OrthographicCamera camera)
