@@ -83,7 +83,7 @@ public class PlayState extends State{
                             new Vector2(MathUtils.random(1600, 3100), MathUtils.random(0, 1500)),
                             new Vector2(50, 50.f),
                             this.resourceHandler.getTexture("tile"),
-                            OnCollisionSetting.SOLID));
+                            OnCollisionSetting.NON_MOVEABLE));
         }
 
         // Might make this class static in the future

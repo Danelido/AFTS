@@ -1,7 +1,8 @@
 package com.afts.core.Entities.Objects;
 
 public enum OnCollisionSetting {
-    SOLID,
+    NON_MOVEABLE,
     MOVEABLE,
-    DESTROY
+    DESTROY,
+    HURT_PLAYER
 }

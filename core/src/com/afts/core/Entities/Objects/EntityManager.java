@@ -12,7 +12,6 @@ import com.afts.core.Utility.Utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -173,7 +172,7 @@ public class EntityManager {
                 this.player.addToPosition(satCollision.getMinimumPenetrationAxis().cpy().scl(satCollision.getOverlap()));
                 this.player.getController().getMovementHandler().bounce(this.separationDirection.cpy());
 
-            }else if(e.getOnCollisionSetting() == OnCollisionSetting.SOLID)
+            }else if(e.getOnCollisionSetting() == OnCollisionSetting.NON_MOVEABLE)
             {
                 this.player.addToPosition(satCollision.getMinimumPenetrationAxis().cpy().scl(satCollision.getOverlap()));
                 this.player.getController().getMovementHandler().bounce(this.separationDirection.cpy());
