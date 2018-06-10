@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import java.awt.Button;
+
 /**
  * Created by Alexander Danliden on 2018-05-14.
  *
@@ -72,13 +74,18 @@ public class MenuState extends State {
     {
         Gdx.input.setInputProcessor(this.inputProcessor);
     }
-
+    //Scale the buttons, so that they occupy a certain % of the screen
+    public int calculateButtonSize(int percent, int screenSize)
+    {
+        float onePercent = screenSize / 100;
+        return Math.round(onePercent * percent);
+    }
     private void initializeButtons()
     {
         this.nrOfButtons = 4;
 
         Vector2 buttonPosition;
-        Vector2 buttonSize = new Vector2(240, 125);
+        Vector2 buttonSize = new Vector2(calculateButtonSize(20, StaticSettings.GAME_WIDTH), calculateButtonSize(12, StaticSettings.GAME_WIDTH));
 
 
         this.uiButtons = new UIButton[nrOfButtons];
@@ -92,7 +99,7 @@ public class MenuState extends State {
         this.uiButtons[Buttons.Score.ordinal()] = new UIButton(resourceHandler.getTexture("Score"), buttonPosition, buttonSize, Buttons.Start.ordinal());
 
         buttonPosition = new Vector2((StaticSettings.GAME_WIDTH / 5) * 1, (StaticSettings.GAME_HEIGHT / 10) * 2);
-        
+
         buttonSize = new Vector2(buttonSize.x / 2, buttonSize.y / 2);
         this.uiButtons[Buttons.Mute.ordinal()] = new UIButton(resourceHandler.getTexture("Sound"), buttonPosition, buttonSize, Buttons.Start.ordinal());
     }
@@ -171,6 +178,10 @@ public class MenuState extends State {
                             uiButtons[Buttons.Mute.ordinal()].setTexture(resourceHandler.getTexture("Mute"));
                             System.out.println("Muted");
                         }
+                    }
+                    if(uiButtons[Buttons.Quit.ordinal()].clicked(new Vector2(screenX, CoordinateConverter.calcYCoord(screenY))))
+                    {
+                        Gdx.app.exit();
                     }
 
                 }
