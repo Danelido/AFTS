@@ -166,13 +166,13 @@ public class EntityManager {
             {
                 this.destroyEntity(index);
 
-            }else if(e.getOnCollisionSetting() == OnCollisionSetting.MOVEABLE)
+            }else if(e.getOnCollisionSetting() == OnCollisionSetting.MOVABLE)
             {
                 e.bounce(this.separationDirection.cpy(), this.player.getController().getMovementHandler().getCurrentVelocity().cpy());
                 this.player.addToPosition(satCollision.getMinimumPenetrationAxis().cpy().scl(satCollision.getOverlap()));
                 this.player.getController().getMovementHandler().bounce(this.separationDirection.cpy());
 
-            }else if(e.getOnCollisionSetting() == OnCollisionSetting.NON_MOVEABLE)
+            }else if(e.getOnCollisionSetting() == OnCollisionSetting.NON_MOVABLE)
             {
                 this.player.addToPosition(satCollision.getMinimumPenetrationAxis().cpy().scl(satCollision.getOverlap()));
                 this.player.getController().getMovementHandler().bounce(this.separationDirection.cpy());
