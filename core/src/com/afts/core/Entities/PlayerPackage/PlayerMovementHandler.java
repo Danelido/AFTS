@@ -271,6 +271,11 @@ public class PlayerMovementHandler {
         return this.currentVelocity;
     }
 
+    public void zeroVelocity()
+    {
+        this.currentVelocity.set(0.f,0.f);
+    }
+
     public float getMaxSpeed()
     {
         return this.maxSpeed;

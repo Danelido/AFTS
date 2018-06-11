@@ -6,6 +6,7 @@ import com.afts.core.Entities.Objects.EntityManager;
 import com.afts.core.Entities.Objects.OnCollisionSetting;
 import com.afts.core.Entities.Objects.Rock;
 import com.afts.core.Entities.PlayerPackage.Player;
+import com.afts.core.Utility.Parsers.LoadLevelFromXML;
 import com.afts.core.Utility.ResourceHandler;
 import com.afts.core.Utility.StaticSettings;
 import com.afts.core.World.Background;
@@ -29,6 +30,7 @@ public class PlayState extends State{
     private Background background;
     private EntityManager entityManager;
     private SATCollision collision;
+    private LoadLevelFromXML levelLoader;
 
     //Debug
     private boolean up,down,left,right;
@@ -50,41 +52,12 @@ public class PlayState extends State{
         this.camera = new OrthographicCamera(StaticSettings.GAME_WIDTH, StaticSettings.GAME_HEIGHT);
         this.camera.zoom = 1.f;
 
-        this.player = new Player(this.resourceHandler, this.camera, new Vector2(0.f,-50.f), new Vector2(20.f, 20.f));
+        this.player = new Player(this.resourceHandler, this.camera, new Vector2(20.f, 20.f));
         this.entityManager = new EntityManager(this.camera, this.player, this.resourceHandler);
 
-        // 10k destroyable entities, sick
-        for(int i = 0; i < 100; i++) {
-           for(int j = 0; j < 100; j++)
-           {
-               this.entityManager.addEntity(
-                       new Rock(
-                               new Vector2(j* 11.f, i * 11.f),
-                               new Vector2(10, 10.f),
-                               this.resourceHandler.getTexture("tile"),
-                               OnCollisionSetting.DESTROY));
-           }
-        }
-
-        for(int i = 0; i < 10; i++)
-        {
-            this.entityManager.addEntity(
-                    new Rock(
-                            new Vector2(MathUtils.random(-2000, -500), MathUtils.random(0, 1500)),
-                            new Vector2(50, 50.f),
-                            this.resourceHandler.getTexture("tile"),
-                            OnCollisionSetting.MOVABLE));
-        }
-
-        for(int i = 0; i < 10; i++)
-        {
-            this.entityManager.addEntity(
-                    new Rock(
-                            new Vector2(MathUtils.random(1600, 3100), MathUtils.random(0, 1500)),
-                            new Vector2(50, 50.f),
-                            this.resourceHandler.getTexture("tile"),
-                            OnCollisionSetting.NON_MOVABLE));
-        }
+        // The playstate should also take in a string "filename" of the level.
+        // The string is based on what the user selects in the menu state
+        this.levelLoader = new LoadLevelFromXML("SandboxLevel", this.entityManager, player);
 
         // Might make this class static in the future
         this.collision = new SATCollision();
@@ -105,14 +78,14 @@ public class PlayState extends State{
 
     private void initializeResources()
     {
+        // No need to load in map textures because those will be set in the level loader
+        // Only load GUI,HUD and particles and stuff like that
         this.resourceHandler.addTexture("playerSprite", "Textures/Player/TemporaryPlayerTexture.png");
         this.resourceHandler.addTexture("joystick", "Textures/Player/joystick.png");
         this.resourceHandler.addTexture("throttle", "Textures/Player/throttle.png");
-        this.resourceHandler.addTexture("basicParticle", "Textures/Particles/particle_1.png");
-        this.resourceHandler.addTexture("backgroundParticle", "Textures/Particles/particle_2.png");
-        this.resourceHandler.addTexture("trailParticle", "Textures/Particles/particle_trail.png");
-        this.resourceHandler.addTexture("tile", "Textures/Random/whiteTile.png");
-        this.resourceHandler.addTexture("particle_03", "Textures/Particles/particle_03.png");
+        this.resourceHandler.addTexture("fadedRoundParticle", "Textures/Particles/fadedRoundParticle.png");
+        this.resourceHandler.addTexture("blurredCircleParticle", "Textures/Particles/blurredCircleParticle.png");
+        this.resourceHandler.addTexture("squareParticle", "Textures/Particles/squareParticle.png");
     }
 
     @Override
