@@ -24,10 +24,8 @@ public class EntityManager {
     private SpriteBatch batch;
     private ParticleGenerator particleGenerator;
     private OrthographicCamera camera;
-
     private Player player;
     private Vector2 separationDirection;
-
     private TextRenderer textRenderer;
 
     public EntityManager(OrthographicCamera camera, Player player, ResourceHandler resourceHandler)
@@ -37,7 +35,7 @@ public class EntityManager {
         this.entities = new ArrayList<Entity>();
         this.batch = new SpriteBatch();
         this.separationDirection = new Vector2();
-        this.particleGenerator = new ParticleGenerator(5000, resourceHandler.getTexture("tile"), this.camera);
+        this.particleGenerator = new ParticleGenerator(5000, resourceHandler.getTexture("squareParticle"), this.camera);
         this.particleGenerator.setMaxAlphaForParticles(0.8f);
         this.particleGenerator.setSpawnSetting(SpawnSetting.shrink_fade_out);
 
@@ -176,6 +174,12 @@ public class EntityManager {
             {
                 this.player.addToPosition(satCollision.getMinimumPenetrationAxis().cpy().scl(satCollision.getOverlap()));
                 this.player.getController().getMovementHandler().bounce(this.separationDirection.cpy());
+
+            }else if(e.getOnCollisionSetting() == OnCollisionSetting.HURT_PLAYER)
+            {
+                this.player.getController().getMovementHandler().zeroVelocity();
+                this.player.moveToStartPosition();
+                Gdx.app.log("PLAYER-EVENT", "God damn it hurts!");
             }
 
         }

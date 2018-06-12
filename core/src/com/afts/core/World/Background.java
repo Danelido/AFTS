@@ -29,7 +29,7 @@ public class Background {
         // This batch might be useful later if we want some other stuff in the background.
         this.batch = new SpriteBatch();
 
-        this.particleGenerator = new ParticleGenerator(500, resources.getTexture("basicParticle"), camera);
+        this.particleGenerator = new ParticleGenerator(500, resources.getTexture("fadedRoundParticle"), camera);
         this.particleGenerator.setSpawnSetting(SpawnSetting.expand_and_shrink_fade_in_fade_out);
         this.particleGenerator.setMaxAlphaForParticles(.25f);
         this.particleGenerator.setParticleCounterCameraFriction(1.f, 1.f);
@@ -59,7 +59,7 @@ public class Background {
                     0.f,
                     MathUtils.random(0.f, 0.f),
                     0.f,
-                    new Color(1.f,203.f/255.f,0.f/255.f,1.f));
+                    new Color(1.f,255.f/255.f,255.f/255.f,1.f));
             this.ticker = 0.f;
         }
 

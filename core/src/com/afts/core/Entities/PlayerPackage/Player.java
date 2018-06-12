@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Player {
 
     private Vector3 position; // Vector 3 to make camera lerp easier, just ignore z
+    private Vector3 startPosition_level; // Used when resetting player
     private Vector2 size;
     private Vector2 origin;
 
@@ -43,25 +44,22 @@ public class Player {
     // Controller for player (The joystick and throttle)
     private PlayerController controller;
 
-    public Player(ResourceHandler resources, OrthographicCamera camera, Vector2 position, Vector2 size)
+    public Player(ResourceHandler resources, OrthographicCamera camera, Vector2 size)
     {
         this.batch = new SpriteBatch();
         this.playerColor = new Color(0.f, 1.f , 1.f, 1.f);
-        this.textureRegion = new TextureRegion(resources.getTexture("particle_03"));
+        this.textureRegion = new TextureRegion(resources.getTexture("blurredCircleParticle"));
 
         this.camera = camera;
         this.size = size;
-        this.position = new Vector3(position.cpy(), 0.f);
-
-        // Center the player on the coordinates that was sent in
-        this.position.x -= (this.size.x / 2.f);
-        this.position.y -= (this.size.y / 2.f);
+        this.position = new Vector3(0,0, 0.f);
+        this.startPosition_level = this.position.cpy();
 
         this.origin = new Vector2(this.size.cpy().scl(0.5f));
         this.scale = 1.f;
         this.rotation = 0.f;
 
-        this.particleHandler = new PlayerParticleHandler(this, this.camera,resources.getTexture("particle_03"));
+        this.particleHandler = new PlayerParticleHandler(this, this.camera,resources.getTexture("blurredCircleParticle"));
         this.aabbRectangle = new AABBRectangle();
         this.collisionPointSetup = CollisionPointSetup.RECTANGLE;
         this.setUpPoints();
@@ -179,6 +177,22 @@ public class Player {
     {
         this.position.x = position.x;
         this.position.y = position.y;
+    }
+
+    public void setStartPosition(Vector2 position)
+    {
+        this.position = new Vector3(position.cpy(), 0.f);
+
+        // Center the player on the coordinates that was sent in
+        this.position.x -= (this.size.x / 2.f);
+        this.position.y -= (this.size.y / 2.f);
+
+        this.startPosition_level = this.position.cpy();
+    }
+
+    public void moveToStartPosition()
+    {
+        this.position.set(this.startPosition_level.cpy().sub(new Vector3(this.size.cpy().scl(0.5f), 0)));
     }
 
     public void addToPosition(Vector2 amount)

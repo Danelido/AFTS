@@ -11,7 +11,7 @@ public class DesktopLauncher {
 		config.title = StaticSettings.GAME_TITLE;
 		config.width = 1280;
 		config.height = 720;
-		config.samples = 2;
+		config.samples = 4;
 		config.foregroundFPS = 300;
 		new LwjglApplication(new Core(), config);
 	}
