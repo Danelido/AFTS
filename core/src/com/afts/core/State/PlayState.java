@@ -57,7 +57,7 @@ public class PlayState extends State{
 
         // The playstate should also take in a string "filename" of the level.
         // The string is based on what the user selects in the menu state
-        this.levelLoader = new LoadLevelFromXML("SandboxLevel", this.entityManager, player);
+        this.levelLoader = new LoadLevelFromXML("Sandbox_2", this.entityManager, player);
 
         // Might make this class static in the future
         this.collision = new SATCollision();
