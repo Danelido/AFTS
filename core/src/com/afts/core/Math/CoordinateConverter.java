@@ -15,8 +15,6 @@ public class CoordinateConverter {
     {
         int sizeOfScreenY = StaticSettings.GAME_HEIGHT;
 
-        //System.out.println(sizeOfScreenY);
-
         //If the coordinate is within the screenBounds
         if(coordinate <= sizeOfScreenY && coordinate >= 0) {
             coordinate = sizeOfScreenY - coordinate;
