@@ -56,6 +56,7 @@ public class Player {
         this.startPosition_level = this.position.cpy();
 
         this.origin = new Vector2(this.size.cpy().scl(0.5f));
+
         this.scale = 1.f;
         this.rotation = 0.f;
 
@@ -91,6 +92,7 @@ public class Player {
                 this.size.x, this.size.y,
                 this.scale, this.scale,
                 this.rotation);
+
 
         this.batch.setColor(Color.WHITE);
         this.controller.render(this.batch);
