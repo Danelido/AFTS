@@ -20,6 +20,7 @@ import com.afts.core.Entities.Objects.EntityManager;
 import com.afts.core.Entities.Objects.OnCollisionSetting;
 import com.afts.core.Entities.PlayerPackage.Player;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -35,9 +36,10 @@ public class LoadLevelFromXML {
         DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
+            FileHandle filehandle = Gdx.files.internal("Levels/"+ filename + ".xml");
 
             //Build Document
-            Document document = builder.parse(new File("Levels/"+ filename + ".xml"));
+            Document document = builder.parse(filehandle.file());
 
             //Normalize the XML Structure; It's just too important !!
             document.getDocumentElement().normalize();

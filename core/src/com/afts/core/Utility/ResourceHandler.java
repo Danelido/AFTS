@@ -30,6 +30,7 @@ public class ResourceHandler {
     public void addTexture(String key,String pathToFile)
     {
         FileHandle file = Gdx.files.internal(pathToFile);
+
         if(file.exists())
         {
             Texture texture = new Texture(file);
