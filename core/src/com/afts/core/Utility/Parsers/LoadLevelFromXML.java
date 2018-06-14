@@ -35,18 +35,20 @@ public class LoadLevelFromXML {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
+            // Init
             builder = factory.newDocumentBuilder();
+
+            // Get the file
             FileHandle filehandle = Gdx.files.internal("Levels/"+ filename + ".xml");
 
             //Build Document
-            Document document = builder.parse(filehandle.file());
+            Document document = builder.parse(filehandle.read());
 
             //Normalize the XML Structure; It's just too important !!
             document.getDocumentElement().normalize();
 
             //Get all objects
             NodeList nList = document.getElementsByTagName("Object");
-
 
             for (int temp = 0; temp < nList.getLength(); temp++)
             {
@@ -108,15 +110,15 @@ public class LoadLevelFromXML {
         } catch (ParserConfigurationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-
+            Gdx.app.log("PARSER", "ParserConfigurationException");
         } catch (SAXException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-
+            Gdx.app.log("PARSER", "SAX Exception");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-
+            Gdx.app.log("PARSER", "IO Exception");
         }
 
         if(!hasPlayerSpawn)
