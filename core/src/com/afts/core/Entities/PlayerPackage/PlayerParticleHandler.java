@@ -28,7 +28,7 @@ public class PlayerParticleHandler {
         this.ticker = 0.f;
         this.color = new Color(0.f, 1.f, 1.f, 1.f);
         this.particleGenerator.setSpawnSetting(SpawnSetting.shrink_fade_out);
-        this.particleGenerator.setParticleCounterCameraFriction(.75f, .75f);
+        this.particleGenerator.setParticleCounterCameraFriction(.6f, .6f);
 
     }
 

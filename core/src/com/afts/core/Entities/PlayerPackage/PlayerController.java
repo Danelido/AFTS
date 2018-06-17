@@ -58,7 +58,7 @@ public class PlayerController {
 
             // to actually be able to move the player on a computer
             //Should not be here when running on android
-            this.throttleActive = this.joyStickActive;
+            //this.throttleActive = this.joyStickActive;
             //______________________________________________
         }
 
@@ -88,7 +88,7 @@ public class PlayerController {
 
                 // to actually be able to move the player on a computer
                 //Should not be here when running on android
-                this.throttleActive = this.joyStickActive;
+               // this.throttleActive = this.joyStickActive;
                 //______________________________________________
             }
         }
@@ -106,7 +106,7 @@ public class PlayerController {
     public void update()
     {
         this.camera.update();
-        this.player.setRotation(this.joystickRotation);
+       // this.player.setRotation(this.joystickRotation);
         this.playerMovementHandler.update();
 
         if(this.throttleActive )
@@ -196,4 +196,8 @@ public class PlayerController {
         return this.playerMovementHandler;
     }
 
+    public float getJoystickRotation()
+    {
+        return this.joystickRotation;
+    }
 }

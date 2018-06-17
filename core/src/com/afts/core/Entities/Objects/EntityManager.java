@@ -173,7 +173,15 @@ public class EntityManager {
             }else if(e.getOnCollisionSetting() == OnCollisionSetting.NON_MOVABLE)
             {
                 this.player.addToPosition(satCollision.getMinimumPenetrationAxis().cpy().scl(satCollision.getOverlap()));
-                this.player.getController().getMovementHandler().bounce(this.separationDirection.cpy());
+                Vector2 newVel = new Vector2(this.player.getController().getMovementHandler().getCurrentVelocity().cpy());
+                if(satCollision.getMinimumPenetrationAxis().x != 0)
+                    newVel.x = 0.f;
+                if(satCollision.getMinimumPenetrationAxis().y != 0)
+                    newVel.y = 0.f;
+
+                this.player.getController().getMovementHandler().setVelocity(newVel.cpy());
+
+
 
             }else if(e.getOnCollisionSetting() == OnCollisionSetting.HURT_PLAYER)
             {

@@ -32,7 +32,7 @@ public class Background {
         this.particleGenerator = new ParticleGenerator(500, resources.getTexture("fadedRoundParticle"), camera);
         this.particleGenerator.setSpawnSetting(SpawnSetting.expand_and_shrink_fade_in_fade_out);
         this.particleGenerator.setMaxAlphaForParticles(.25f);
-        this.particleGenerator.setParticleCounterCameraFriction(1.f, 1.f);
+        this.particleGenerator.setParticleCounterCameraFriction(0.75f, 0.75f);
 
         // Basically spawn particles a little bit outside the screen
         this.outerXBounds = 100.f;
@@ -55,7 +55,7 @@ public class Background {
                             ((StaticSettings.GAME_HEIGHT / 2.f) * this.camera.zoom + this.camera.position.y + this.outerYBounds)),
                     size,
                     size,
-                    4.f,
+                    6.f,
                     0.f,
                     MathUtils.random(0.f, 0.f),
                     0.f,

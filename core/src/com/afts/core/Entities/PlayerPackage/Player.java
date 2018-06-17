@@ -44,6 +44,8 @@ public class Player {
     // Controller for player (The joystick and throttle)
     private PlayerController controller;
 
+    // Direction indicator
+    PlayerDirectionIndicator directionIndicator;
     public Player(ResourceHandler resources, OrthographicCamera camera, Vector2 size)
     {
         this.batch = new SpriteBatch();
@@ -66,6 +68,8 @@ public class Player {
         this.setUpPoints();
 
         this.controller = new PlayerController(this, resources);
+
+        this.directionIndicator = new PlayerDirectionIndicator(this,resources);
     }
 
     public void update()
@@ -93,8 +97,8 @@ public class Player {
                 this.scale, this.scale,
                 this.rotation);
 
-
         this.batch.setColor(Color.WHITE);
+        this.directionIndicator.display(this.batch);
         this.controller.render(this.batch);
         this.batch.end();
     }
@@ -168,6 +172,11 @@ public class Player {
     public void setColor(Color color)
     {
         this.playerColor = color;
+    }
+
+    public Color getColor()
+    {
+        return this.playerColor;
     }
 
     public void setPosition(Vector3 position)

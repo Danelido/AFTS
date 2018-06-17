@@ -9,13 +9,13 @@ public class PlayerMovementHandler {
     private Player player;
 
     // Movement stuff
-    private float acceleration;
+
     private float deAcceleration;
     private float maxSpeed;
     private float minAccMultiplier;
-
+    private float miniVel = 2.f;
     private Vector2 currentVelocity;
-
+    private Vector2 mulitpliers;
     private boolean move = false;
 
     public PlayerMovementHandler(Player player)
@@ -23,209 +23,108 @@ public class PlayerMovementHandler {
         this.player = player;
 
         // Initialize movement and rotation variables
-        this.acceleration = 1000.f;
-        this.deAcceleration = 600.f;
-        this.maxSpeed = 1000;
-        this.minAccMultiplier = 0.095f;
+        this.deAcceleration = 2000.f;
+        this.maxSpeed = 600;
+        this.minAccMultiplier = 0.2f;
         this.currentVelocity = new Vector2(0.f, 0.f);
-
-    }
+        this.mulitpliers = new Vector2(0,0);
+}
 
     public void update()
     {
         float delta = Gdx.graphics.getDeltaTime();
-        float multiplierX = MathUtils.cosDeg(this.player.getRotation() + 90.f);
-        float multiplierY = MathUtils.sinDeg(this.player.getRotation() + 90.f);
+        float multiplierX = MathUtils.cosDeg(this.player.getController().getJoystickRotation() + 90.f);
+        float multiplierY = MathUtils.sinDeg(this.player.getController().getJoystickRotation()+ 90.f);
+        this.mulitpliers.set(multiplierX,multiplierY);
 
-        if(this.move) {
-            this.movingX(multiplierX, delta);
-            this.movingY(multiplierY,delta);
-        }else
+        if(this.move)
         {
-            this.stopping(delta);
+            this.moving(delta,multiplierX,multiplierY);
+        }
+        else
+        {
+            this.stopping(delta,multiplierX,multiplierY);
         }
 
         this.player.translatePosition(this.currentVelocity);
 
     }
 
-    private void movingY(float multiplierY, float delta)
+    private void moving(float delta, float mX, float mY)
     {
-        if(multiplierY > 0.f)
-        {
-            // Movement
-            if(this.currentVelocity.y < this.maxSpeed * multiplierY)
-            {
-                this.currentVelocity.y += this.acceleration * Math.max(multiplierY, this.minAccMultiplier) * delta;
-            }
-
-            if(this.currentVelocity.y > this.maxSpeed*multiplierY)
-            {
-                this.currentVelocity.y -= this.deAcceleration * Math.abs(this.currentVelocity.y /  this.maxSpeed)* delta;
-
-                if(this.currentVelocity.y <= this.maxSpeed*multiplierY)
-                {
-                    this.currentVelocity.y = this.maxSpeed*multiplierY;
-                }
-            }
-
-        }
-        else if(multiplierY < 0.f)
-        {
-            // Movement
-            if(this.currentVelocity.y > this.maxSpeed * multiplierY)
-            {
-                this.currentVelocity.y += this.acceleration * Math.min(multiplierY, -this.minAccMultiplier) * delta;
-            }
-
-            if(this.currentVelocity.y < this.maxSpeed*multiplierY)
-            {
-                this.currentVelocity.y += this.deAcceleration * Math.abs(this.currentVelocity.y /  this.maxSpeed)* delta;
-
-                if(this.currentVelocity.y >= this.maxSpeed*multiplierY)
-                {
-                    this.currentVelocity.y = this.maxSpeed*multiplierY;
-                }
-            }
-
-        }else{
-
-            // Y stopping
-            if(this.currentVelocity.y > 0.f)
-            {
-                this.currentVelocity.y -= this.deAcceleration * Math.abs(this.currentVelocity.y /  this.maxSpeed)* delta;
-
-                if(this.currentVelocity.y <= 0.f)
-                {
-                    this.currentVelocity.y = 0.f;
-                }
-
-            }
-            else if(this.currentVelocity.y < 0.f)
-            {
-                this.currentVelocity.y += this.deAcceleration * Math.abs(this.currentVelocity.y /  this.maxSpeed) * delta;
-
-                if(this.currentVelocity.y >= 0.f)
-                {
-                    this.currentVelocity.y = 0.f;
-                }
-            }
-
-
-        }
-
+        this.currentVelocity.x = this.maxSpeed * delta * mX * 35.f;
+        this.currentVelocity.y = this.maxSpeed * delta * mY * 35.f;
     }
 
-    private void movingX(float multiplierX, float delta)
+    private void stopping(float delta, float mX, float mY)
     {
-        if(multiplierX > 0.f)
-        {
-            // Movement
-            if(this.currentVelocity.x < this.maxSpeed * multiplierX)
-            {
-                this.currentVelocity.x += this.acceleration * Math.max(multiplierX, this.minAccMultiplier) * delta;
-            }
-
-            if(this.currentVelocity.x > this.maxSpeed*multiplierX)
-            {
-                this.currentVelocity.x -= this.deAcceleration * Math.abs(this.currentVelocity.x /  this.maxSpeed)* delta;
-
-                if(this.currentVelocity.x <= this.maxSpeed*multiplierX)
-                {
-                    this.currentVelocity.x = this.maxSpeed*multiplierX;
-                }
-            }
-
-
-        }
-        else if(multiplierX < 0.f)
-        {
-            // Movement
-            if(this.currentVelocity.x > this.maxSpeed * multiplierX)
-            {
-                this.currentVelocity.x += this.acceleration * Math.min(multiplierX, -this.minAccMultiplier) * delta;
-            }
-
-            if(this.currentVelocity.x < this.maxSpeed*multiplierX)
-            {
-                this.currentVelocity.x += this.deAcceleration * Math.abs(this.currentVelocity.x /  this.maxSpeed)* delta;
-
-                if(this.currentVelocity.x >= this.maxSpeed*multiplierX)
-                {
-                    this.currentVelocity.x = this.maxSpeed*multiplierX;
-                }
-            }
-
-        }else
-        {
-            // X stopping
-            if(this.currentVelocity.x > 0.f)
-            {
-                this.currentVelocity.x -= this.deAcceleration * Math.abs(this.currentVelocity.x /  this.maxSpeed) * delta;
-
-                if(this.currentVelocity.x <= 0.f)
-                {
-                    this.currentVelocity.x = 0.f;
-                }
-
-            }
-            else if(this.currentVelocity.x < 0.f)
-            {
-                this.currentVelocity.x += this.deAcceleration * Math.abs(this.currentVelocity.x /  this.maxSpeed) * delta;
-
-                if(this.currentVelocity.x >= 0.f)
-                {
-                    this.currentVelocity.x = 0.f;
-                }
-            }
-        }
-
-    }
-
-    private void stopping(float delta)
-    {
-        // X
-        if(this.currentVelocity.x > 0.f)
-        {
-            this.currentVelocity.x -= this.deAcceleration * Math.abs(this.currentVelocity.x /  this.maxSpeed) * delta;
-
-            if(this.currentVelocity.x <= 0.f)
-            {
+    // X
+      if(mX > 0)
+      {
+          if(this.currentVelocity.x > miniVel)
+          {
+              this.currentVelocity.x -= this.deAcceleration * Math.max(mX, this.minAccMultiplier) * delta;
+          }
+          else if(this.currentVelocity.x < -miniVel)
+          {
+              this.currentVelocity.x += this.deAcceleration * Math.max(mX, this.minAccMultiplier) * delta;
+          }
+          else
+          {
                 this.currentVelocity.x = 0.f;
-            }
+          }
 
-        }
-        else if(this.currentVelocity.x < 0.f)
+      }
+      else if(mX < 0)
+      {
+          if(this.currentVelocity.x > miniVel)
+          {
+              this.currentVelocity.x += this.deAcceleration * Math.min(mX, -this.minAccMultiplier) * delta;
+          }
+          else if(this.currentVelocity.x < -miniVel)
+          {
+              this.currentVelocity.x -= this.deAcceleration * Math.min(mX, -this.minAccMultiplier) * delta;
+          }
+          else
+          {
+              this.currentVelocity.x = 0.f;
+          }
+      }
+
+
+      // Y
+        if(mY > 0)
         {
-            this.currentVelocity.x += this.deAcceleration * Math.abs(this.currentVelocity.x /  this.maxSpeed) * delta;
-
-            if(this.currentVelocity.x >= 0.f)
+            if(this.currentVelocity.y > miniVel)
             {
-                this.currentVelocity.x = 0.f;
+                this.currentVelocity.y -= this.deAcceleration * Math.max(mY, this.minAccMultiplier) * delta;
             }
-        }
-
-
-        // Y
-        if(this.currentVelocity.y > 0.f)
-        {
-            this.currentVelocity.y -= this.deAcceleration * Math.abs(this.currentVelocity.y /  this.maxSpeed)* delta;
-
-            if(this.currentVelocity.y <= 0.f)
+            else if(this.currentVelocity.y < -miniVel)
+            {
+                this.currentVelocity.y += this.deAcceleration * Math.max(mY, this.minAccMultiplier) * delta;
+            }
+            else
             {
                 this.currentVelocity.y = 0.f;
             }
 
         }
-        else if(this.currentVelocity.y < 0.f)
+        else if(mY < 0)
         {
-            this.currentVelocity.y += this.deAcceleration * Math.abs(this.currentVelocity.y /  this.maxSpeed) * delta;
-
-            if(this.currentVelocity.y >= 0.f)
+            if(this.currentVelocity.y > miniVel)
+            {
+                this.currentVelocity.y += this.deAcceleration * Math.min(mY, -this.minAccMultiplier) * delta;
+            }
+            else if(this.currentVelocity.y < -miniVel)
+            {
+                this.currentVelocity.y -= this.deAcceleration * Math.min(mY, -this.minAccMultiplier) * delta;
+            }
+            else
             {
                 this.currentVelocity.y = 0.f;
             }
         }
+
 
     }
 
@@ -284,6 +183,11 @@ public class PlayerMovementHandler {
     public boolean isMoving()
     {
         return this.move;
+    }
+
+    public Vector2 getMultipliers()
+    {
+        return this.mulitpliers;
     }
 
     public Vector2 getVelocityFractionABS()
