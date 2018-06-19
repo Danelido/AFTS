@@ -110,8 +110,7 @@ public class MenuState extends State {
         this.resourceHandler.addTexture("Quit", "Textures/UI/quitButtonTemp.png");
         this.resourceHandler.addTexture("Mute", "Textures/UI/Mute.png");
         this.resourceHandler.addTexture("Sound", "Textures/UI/Sound.png");
-        this.resourceHandler.addTexture("playerSprite", "Textures/Player/TemporaryPlayerTexture.png");
-        this.resourceHandler.addTexture("basicParticle", "Textures/Particles/particle_1.png");
+        this.resourceHandler.addTexture("fadedRoundParticle", "Textures/Particles/fadedRoundParticle.png");
     }
 
     @Override
@@ -158,6 +157,7 @@ public class MenuState extends State {
 
                 if(button == 0)
                 {
+                    System.out.println(new Vector2(screenX, screenY));
                     if(uiButtons[Buttons.Start.ordinal()].clicked(new Vector2(screenX, CoordinateConverter.calcYCoord(screenY))))
                     {
                         System.out.println("Clicked Button");
@@ -170,13 +170,11 @@ public class MenuState extends State {
                         {
                             StaticSettings.muted = false;
                             uiButtons[Buttons.Mute.ordinal()].setTexture(resourceHandler.getTexture("Sound"));
-                            System.out.println("Unmuted");
                         }
                         else
                         {
                             StaticSettings.muted = true;
                             uiButtons[Buttons.Mute.ordinal()].setTexture(resourceHandler.getTexture("Mute"));
-                            System.out.println("Muted");
                         }
                     }
                     if(uiButtons[Buttons.Quit.ordinal()].clicked(new Vector2(screenX, CoordinateConverter.calcYCoord(screenY))))

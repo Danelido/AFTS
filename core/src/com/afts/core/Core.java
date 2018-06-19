@@ -16,7 +16,7 @@ public class Core extends ApplicationAdapter {
 	public void create()
 	{
 		this.stateManager = new StateManager();
-		this.stateManager.pushNewState(new PlayState(this.stateManager));
+		this.stateManager.pushNewState(new MenuState(this.stateManager));
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
