@@ -156,6 +156,37 @@ public class ParticleGenerator {
 
         }
     }
+    public void renderMenuParticles()
+    {
+        if(this.nrOfAliveParticles > 0)
+        {
+            this.particleBatch.enableBlending();
+            this.particleBatch.begin();
+
+            for(int i = 0; i < this.nrOfAliveParticles; i++)
+            {
+                Particle particle = this.particleList.get(i);
+                this.particleBatch.setColor(particle.getColor());
+
+                this.particleBatch.draw(
+                        this.particleTexture,
+                        particle.getX() + (this.camera.position.x * this.counterCameraFrictionX),
+                        particle.getY() + (this.camera.position.y * this.counterCameraFrictionY),
+                        particle.getWidth() / 2.f,
+                        particle.getHeight() / 2.f,
+                        particle.getWidth(),
+                        particle.getHeight(),
+                        1.f,
+                        1.f,
+                        particle.getRotation());
+
+                this.particleBatch.setColor(Color.WHITE);
+            }
+
+            this.particleBatch.end();
+
+        }
+    }
 
     private void swapParticleIfNeeded(int index)
     {

@@ -27,4 +27,21 @@ public class CoordinateConverter {
         return coordinate;
     }
 
+    //Takes a coordinate and returns the Y-Down equivalent
+    public static float calcYCoord(float coordinate)
+    {
+        int sizeOfScreenY = StaticSettings.GAME_HEIGHT;
+
+        //If the coordinate is within the screenBounds
+        if(coordinate <= sizeOfScreenY && coordinate >= 0) {
+            coordinate = sizeOfScreenY - coordinate;
+        }
+        //Return a unusable coordinate
+        else {
+            coordinate = -1;
+        }
+
+        return coordinate;
+    }
+
 }
