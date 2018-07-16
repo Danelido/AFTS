@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 
 /**
- * Created by Alexander Danliden on 2018-05-14.
+ * Created by Alexander Danliden on 2018-05-14
  */
 
 public class PlayState extends State{
@@ -80,6 +80,9 @@ public class PlayState extends State{
         this.resourceHandler.addTexture("fadedRoundParticle", "Textures/Particles/fadedRoundParticle.png");
         this.resourceHandler.addTexture("blurredCircleParticle", "Textures/Particles/blurredCircleParticle.png");
         this.resourceHandler.addTexture("squareParticle", "Textures/Particles/squareParticle.png");
+
+        this.resourceHandler.addTexture("joystickBase", "Textures/Player/joystickBase.png");
+        this.resourceHandler.addTexture("joystickTop", "Textures/Player/joystickTop2.png");
     }
 
     @Override

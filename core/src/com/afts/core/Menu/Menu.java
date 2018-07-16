@@ -153,6 +153,8 @@ public class Menu {
             this.uiButtons[i].dispose();
         }
         this.menuParticles.dispose();
+        this.batch.dispose();
+        resourceHandler.cleanUp();
     }
 }
 

@@ -14,11 +14,19 @@ public class PlayerController {
 
     private Player player;
     private OrthographicCamera camera;
-
+    //old
     private TextureRegion joyStickTexture, throttleTexture;
+    //New
+    private TextureRegion joystickBaseTexture, joystickTopTexture;
+
     private Vector2 throttleSize;
+    //Old
     private float joystickRadius, joystickRotation;
     private Vector2 joyStickPosition, throttlePosition;
+    //New
+    private Vector2 joystickBasePosition, joystickTopPosition;
+    private float joystickBaseDiameter, joystickTopRadius;
+
 
     private int throttlePointer, joystickPointer;
     private boolean joyStickActive, throttleActive;
@@ -29,9 +37,25 @@ public class PlayerController {
     {
         this.player = player;
         this.camera = new OrthographicCamera(StaticSettings.GAME_WIDTH, StaticSettings.GAME_HEIGHT);
+
         // So that (0,0) is at the left corner
         this.camera.position.x = StaticSettings.GAME_WIDTH / 2.f;
         this.camera.position.y = StaticSettings.GAME_HEIGHT / 2.f;
+
+
+
+        // Joystick textures
+        this.joystickBaseTexture = new TextureRegion(resourceHandler.getTexture("joystickBase"));
+        this.joystickTopTexture = new TextureRegion(resourceHandler.getTexture("joystickTop"));
+        //
+        // Joystick positions
+        this.joystickBasePosition = new Vector2(100, 100);
+        this.joystickTopPosition = new Vector2(125, 125);
+        //
+        //Joystick Radii & positions
+        this.joystickBaseDiameter = 150.0f;
+        this.joystickTopRadius = 100.0f;
+
 
         this.joyStickTexture = new TextureRegion(resourceHandler.getTexture("joystick"));
         this.throttleTexture = new TextureRegion(resourceHandler.getTexture("throttle"));
@@ -121,13 +145,13 @@ public class PlayerController {
     public void render(SpriteBatch batch)
     {
         batch.setProjectionMatrix(this.camera.combined);
-
+/*
         batch.draw(this.joyStickTexture,
                 this.joyStickPosition.x, this.joyStickPosition.y,
                 this.joystickRadius, this.joystickRadius,
                 this.joystickRadius * 2.f,  this.joystickRadius * 2.f,
                 1.f, 1.f,
-                this.joystickRotation);
+                this.joystickRotation);*/
 
         batch.draw(this.throttleTexture,
                 this.throttlePosition.x, this.throttlePosition.y,
@@ -135,6 +159,14 @@ public class PlayerController {
                 this.throttleSize.x,   this.throttleSize.y,
                 1.f, 1.f,
                 0.f);
+
+        batch.draw(this.joystickBaseTexture,
+                this.joystickBasePosition.x, this.joystickBasePosition.y,
+               100 * 1.5f,100 * 1.5f);
+
+        batch.draw(this.joystickTopTexture,
+                this.joystickTopPosition.x, this.joystickTopPosition.y,
+                100, 100);
     }
 
     public void dispose()
@@ -142,19 +174,24 @@ public class PlayerController {
 
     }
 
+    //Check to see if the touch position is within the boundaries of the joystick
     private boolean checkJoystick(Vector3 touch)
     {
         Vector3 fingerPos = touch.cpy();
         this.camera.unproject(fingerPos);
 
-        if(fingerPos.x >= this.joyStickPosition.x && fingerPos.x <= this.joyStickPosition.x + this.joystickRadius * 2.f)
-        {
-            if(fingerPos.y >= this.joyStickPosition.y && fingerPos.y <= this.joyStickPosition.y + this.joystickRadius * 2.f)
-            {
-                this.joystickPointer = (int)touch.z;
-                return true;
+        if(fingerPos.x >= this.joystickBasePosition.x && fingerPos.x <= this.joystickBasePosition.x + this.joystickBaseDiameter) {
+            if(fingerPos.y >= this.joystickBasePosition.y && fingerPos.y <= this.joystickBasePosition.y + this.joystickBaseDiameter) {
 
+                /*Calculate the specific position for the top joystick*/
+                //Old ---- We can polish this
+                this.joystickPointer = (int)touch.z;
+                //
+                this.joystickTopPosition.x = fingerPos.x - (100 / 2);
+                this.joystickTopPosition.y = fingerPos.y - (100 / 2);
+                return true;
             }
+
         }
 
         return false;
@@ -181,6 +218,17 @@ public class PlayerController {
     {
         Vector3 fingerPos = touch.cpy();
         this.camera.unproject(fingerPos);
+
+        //This is very sloppy and need to be polished
+        if(fingerPos.x >= this.joystickBasePosition.x && fingerPos.x <= this.joystickBasePosition.x + this.joystickBaseDiameter) {
+            if (fingerPos.y >= this.joystickBasePosition.y && fingerPos.y <= this.joystickBasePosition.y + this.joystickBaseDiameter) {
+
+
+                this.joystickTopPosition.x = fingerPos.x - (100 / 2);
+                this.joystickTopPosition.y = fingerPos.y - (100 / 2);
+
+            }
+        }
 
         this.joystickRotation = (float)Math.atan2(
                 this.joyStickPosition.y + this.joystickRadius - fingerPos.y,

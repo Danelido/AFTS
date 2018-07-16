@@ -7,6 +7,7 @@ import com.afts.core.World.Background;
 import com.afts.core.Menu.Menu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 
@@ -27,7 +28,6 @@ public class MenuState extends State {
     private Menu menu;
 
     private ResourceHandler resourceHandler;
-
 
     @Override
     // this is automatically called when a state is initialized!
@@ -114,9 +114,10 @@ public class MenuState extends State {
             @Override //MouseButton Up
             public boolean touchUp(int screenX, int screenY, int pointer, int button)
             {
+                //Check if the button that was pressed down is the same as the button that is being pressed up,
+                //  -this is to avoid complications, if the user drags the cursor to hover over a different button.
                 if(buttonPressed == menu.mouseUp(screenX, screenY))
                 {
-                    System.out.println(buttonPressed);
                     if(buttonPressed == Buttons.Start.ordinal())
                     {
                         MenuState.this.stateManager.pushNewState(new PlayState(MenuState.this.stateManager));
@@ -151,7 +152,8 @@ public class MenuState extends State {
     @Override
     public void dispose()
     {
-        menu.dispose();
+
+        this.menu.dispose();
         this.resourceHandler.cleanUp();
     }
 
